@@ -579,7 +579,7 @@ function Process() {
 /* -------------------------------------------------------------------------- */
 /*                                   TOOLS                                    */
 /* -------------------------------------------------------------------------- */
-const TOOL_GROUPS: Array<{ title: string; tools: Array<{ name: string; icon: JSX.Element }> }> = [
+const TOOL_GROUPS: Array<{ title: string; tools: Array<{ name: string; icon: ReactNode }> }> = [
   {
     title: "Design",
     tools: [
