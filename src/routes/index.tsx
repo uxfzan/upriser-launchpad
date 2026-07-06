@@ -12,6 +12,7 @@ export const Route = createFileRoute("/")({
 });
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+const CALENDLY_URL = "https://calendly.com/upriserstudio/intro-call";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -83,7 +84,8 @@ function Nav() {
           </ul>
         </nav>
         <a
-          href="#contact"
+          href={CALENDLY_URL}
+          target="_blank"
           className={`group inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-[14px] font-medium transition-colors ${ctaCls} ${textCls}`}
         >
           Book a Call
@@ -275,7 +277,8 @@ function Hero() {
 
           <motion.div variants={fadeUp} className="mt-12 flex flex-wrap items-center gap-4">
             <a
-              href="#contact"
+              href={CALENDLY_URL}
+              target="_blank"
               className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-[15px] font-medium text-brand transition-transform hover:-translate-y-0.5"
             >
               Book a Call
@@ -781,14 +784,15 @@ function Contact() {
           </p>
           <div className="mt-12 flex flex-wrap items-center gap-4">
             <a
-              href="mailto:hello@upriser.studio"
+              href="mailto:upriserstudios@gmail.com"
               className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-[15px] font-medium text-brand transition-transform hover:-translate-y-0.5"
             >
-              hello@upriser.studio
+              upriserstudios@gmail.com
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
             <a
-              href="#"
+              href={CALENDLY_URL}
+              target="_blank"
               className="inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
             >
               Book a Call
