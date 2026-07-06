@@ -1,20 +1,8 @@
+import type { ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Sparkles,
-  Layout,
-  Code2,
-  Presentation,
-  Palette,
-  Plus,
-  Minus,
-  Mail,
-  Calendar,
-  MapPin,
-} from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { ArrowUpRight, Plus } from "lucide-react";
 import projectNova from "@/assets/project-nova.jpg";
 import projectPulse from "@/assets/project-pulse.jpg";
 import projectAtlas from "@/assets/project-atlas.jpg";
@@ -27,12 +15,12 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE } },
 } as const;
 
 const stagger = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -40,19 +28,16 @@ const stagger = {
 /* -------------------------------------------------------------------------- */
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState<string>("");
+  const [onHero, setOnHero] = useState(true);
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 20);
-      const sections = ["services", "work", "process", "tools", "faq", "contact"];
-      const y = window.scrollY + 120;
-      let current = "";
-      for (const id of sections) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= y) current = id;
+      const y = window.scrollY;
+      setScrolled(y > 12);
+      const hero = document.getElementById("hero");
+      if (hero) {
+        setOnHero(y < hero.offsetHeight - 80);
       }
-      setActive(current);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -68,203 +53,257 @@ function Nav() {
     ["Contact", "contact"],
   ];
 
+  const light = onHero;
+  const textCls = light ? "text-white" : "text-ink";
+  const mutedCls = light ? "text-white/70 hover:text-white" : "text-subtle hover:text-ink";
+  const ctaCls = light
+    ? "border-white/25 text-white hover:bg-white hover:text-brand"
+    : "border-ink/15 text-ink hover:bg-ink hover:text-white";
+  const border = scrolled
+    ? light
+      ? "border-b border-white/10 bg-brand/60 backdrop-blur-md"
+      : "border-b border-hairline bg-white/80 backdrop-blur-md"
+    : "border-b border-transparent";
+
   return (
-    <motion.header
-      initial={{ y: -30, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: EASE }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "pt-3" : "pt-6"}`}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <nav
-          className={`flex items-center justify-between rounded-full px-5 py-3 transition-all duration-500 ${
-            scrolled
-              ? "bg-white/70 backdrop-blur-xl border border-black/5 shadow-[0_8px_32px_-12px_rgba(15,23,42,0.12)]"
-              : "bg-transparent"
-          }`}
-        >
-          <a href="#" className="flex items-center gap-2 font-bold tracking-tight text-foreground">
-            <span className="inline-block h-2 w-2 rounded-full bg-lime" />
-            UPRISER
-          </a>
-          <ul className="hidden md:flex items-center gap-1 text-sm">
+    <header className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${border}`}>
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10 md:py-6">
+        <a href="#hero" className={`text-[17px] font-medium tracking-tight ${textCls}`}>
+          Upriser<span className={light ? "text-white/50" : "text-subtle"}>®</span>
+        </a>
+        <nav className="hidden md:block">
+          <ul className="flex items-center gap-9 text-[15px]">
             {links.map(([label, id]) => (
               <li key={label}>
-                <a
-                  href={`#${id}`}
-                  className={`relative px-3 py-1.5 rounded-full transition-colors ${
-                    active === id ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {active === id && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full bg-secondary"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative">{label}</span>
+                <a href={`#${id}`} className={`transition-colors ${mutedCls}`}>
+                  {label}
                 </a>
               </li>
             ))}
           </ul>
-          <a
-            href="#contact"
-            className="group inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]"
-          >
-            Book a Call
-            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
         </nav>
+        <a
+          href="#contact"
+          className={`group inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-[14px] font-medium transition-colors ${ctaCls} ${textCls}`}
+        >
+          Book a Call
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </a>
       </div>
-    </motion.header>
+    </header>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                          INTERACTIVE MESH GRADIENT                         */
+/*                          ELASTIC DIGITAL FABRIC                            */
 /* -------------------------------------------------------------------------- */
-function MeshGradient() {
-  const ref = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(0.5);
-  const my = useMotionValue(0.5);
-  const sx = useSpring(mx, { stiffness: 60, damping: 20, mass: 0.8 });
-  const sy = useSpring(my, { stiffness: 60, damping: 20, mass: 0.8 });
+function ElasticFabric() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      mx.set((e.clientX - r.left) / r.width);
-      my.set((e.clientY - r.top) / r.height);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let W = 0, H = 0, dpr = 1;
+    const mouse = { x: -9999, y: -9999, active: false };
+
+    type P = { ox: number; oy: number; x: number; y: number; vx: number; vy: number };
+    let cols = 0, rows = 0, spacing = 0;
+    let points: P[] = [];
+
+    const build = () => {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = rect.width; H = rect.height;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      spacing = Math.max(38, Math.min(56, W / 30));
+      cols = Math.ceil(W / spacing) + 2;
+      rows = Math.ceil(H / spacing) + 2;
+      points = [];
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          const ox = i * spacing - spacing;
+          const oy = j * spacing - spacing;
+          points.push({ ox, oy, x: ox, y: oy, vx: 0, vy: 0 });
+        }
+      }
     };
+
+    build();
+    const ro = new ResizeObserver(build);
+    ro.observe(canvas);
+
+    const onMove = (e: MouseEvent) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+      mouse.active = true;
+    };
+    const onLeave = () => { mouse.active = false; };
     window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [mx, my]);
+    canvas.addEventListener("mouseleave", onLeave);
 
-  const b1x = useTransform(sx, [0, 1], ["10%", "35%"]);
-  const b1y = useTransform(sy, [0, 1], ["5%", "25%"]);
-  const b2x = useTransform(sx, [0, 1], ["70%", "50%"]);
-  const b2y = useTransform(sy, [0, 1], ["55%", "35%"]);
-  const b3x = useTransform(sx, [0, 1], ["30%", "55%"]);
-  const b3y = useTransform(sy, [0, 1], ["70%", "55%"]);
+    const radius = 160;
+    const stiffness = 0.06;
+    const damping = 0.82;
+    const pull = 0.22;
 
-  return (
-    <div ref={ref} className="absolute inset-0 -z-10 overflow-hidden bg-white">
-      <motion.div
-        initial={{ scale: 0.85, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 2.2, ease: EASE }}
-        className="absolute inset-0"
-      >
-        <motion.div
-          style={{ left: b1x, top: b1y }}
-          className="absolute h-[55vw] w-[55vw] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-[90px]"
-        >
-          <div className="h-full w-full rounded-full bg-[radial-gradient(circle_at_center,#a5f3fc,transparent_60%)]" />
-        </motion.div>
-        <motion.div
-          style={{ left: b2x, top: b2y }}
-          className="absolute h-[50vw] w-[50vw] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-[90px]"
-        >
-          <div className="h-full w-full rounded-full bg-[radial-gradient(circle_at_center,#ddd6fe,transparent_60%)]" />
-        </motion.div>
-        <motion.div
-          style={{ left: b3x, top: b3y }}
-          className="absolute h-[45vw] w-[45vw] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-[90px]"
-        >
-          <div className="h-full w-full rounded-full bg-[radial-gradient(circle_at_center,#fbcfe8,transparent_60%)]" />
-        </motion.div>
-        <motion.div
-          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute right-[10%] top-[12%] h-[30vw] w-[30vw] rounded-full opacity-50 blur-[100px] bg-[radial-gradient(circle_at_center,#fde68a,transparent_60%)]"
-        />
-        <motion.div
-          animate={{ x: [0, -50, 0], y: [0, 40, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-[8%] bottom-[12%] h-[28vw] w-[28vw] rounded-full opacity-50 blur-[100px] bg-[radial-gradient(circle_at_center,#bef264,transparent_60%)]"
-        />
-      </motion.div>
-      {/* Grain */}
-      <div
-        className="absolute inset-0 opacity-[0.035] mix-blend-multiply pointer-events-none"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-        }}
-      />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-white" />
-    </div>
-  );
+    let raf = 0;
+    const tick = () => {
+      // Update
+      if (!reduce) {
+        for (const p of points) {
+          if (mouse.active) {
+            const dx = p.x - mouse.x;
+            const dy = p.y - mouse.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < radius * radius) {
+              const d = Math.sqrt(d2) || 1;
+              const f = (1 - d / radius) * pull;
+              // Pull toward mouse (elastic drape)
+              p.vx -= (dx / d) * f * 6;
+              p.vy -= (dy / d) * f * 6;
+            }
+          }
+          // Spring back to origin
+          p.vx += (p.ox - p.x) * stiffness;
+          p.vy += (p.oy - p.y) * stiffness;
+          p.vx *= damping;
+          p.vy *= damping;
+          p.x += p.vx;
+          p.y += p.vy;
+        }
+      }
+
+      // Draw
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255,255,255,0.09)";
+
+      // horizontal lines
+      for (let j = 0; j < rows; j++) {
+        ctx.beginPath();
+        for (let i = 0; i < cols; i++) {
+          const p = points[j * cols + i];
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+      // vertical lines
+      for (let i = 0; i < cols; i++) {
+        ctx.beginPath();
+        for (let j = 0; j < rows; j++) {
+          const p = points[j * cols + i];
+          if (j === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+
+      // dots
+      for (const p of points) {
+        const dx = p.x - p.ox;
+        const dy = p.y - p.oy;
+        const disp = Math.min(1, Math.sqrt(dx * dx + dy * dy) / 40);
+        const a = 0.15 + disp * 0.55;
+        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.1 + disp * 1.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener("mousemove", onMove);
+      canvas.removeEventListener("mouseleave", onLeave);
+    };
+  }, [reduce]);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />;
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                    HERO                                    */
+/*                                   HERO                                     */
 /* -------------------------------------------------------------------------- */
 function Hero() {
-  const headlineLines = ["Design and development", "partner for", "ambitious startups"];
-
   return (
-    <section className="relative min-h-[100svh] w-full overflow-hidden pt-32 pb-24 flex items-center">
-      <MeshGradient />
-      <div className="mx-auto max-w-6xl px-6 text-center w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-foreground/80 bg-white/60 backdrop-blur-md border border-black/5"
-        >
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-lime" />
-          Design. Build. Launch.
-        </motion.div>
+    <section id="hero" className="relative min-h-[92vh] w-full overflow-hidden bg-brand text-white">
+      <ElasticFabric />
+      {/* soft vignette */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(6,20,52,0.55)_100%)]" />
 
-        <h1 className="mt-8 text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-semibold leading-[1.02] text-foreground max-w-5xl mx-auto">
-          {headlineLines.map((line, i) => (
-            <span key={i} className="block overflow-hidden">
-              <motion.span
-                initial={{ y: "110%" }}
-                animate={{ y: "0%" }}
-                transition={{ duration: 0.9, delay: 0.35 + i * 0.12, ease: EASE }}
-                className={`block ${i === 2 ? "italic font-normal text-foreground/70" : ""}`}
-              >
-                {line}
-              </motion.span>
-            </span>
-          ))}
-        </h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9, ease: EASE }}
-          className="mt-8 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground leading-relaxed"
-        >
-          We help founders build brands, products, websites, and investor-ready stories that move businesses forward.
-        </motion.p>
-
+      <div className="relative mx-auto flex min-h-[92vh] max-w-[1400px] flex-col justify-between px-6 pb-16 pt-40 md:px-10 md:pb-24 md:pt-48">
         <motion.div
           initial="hidden"
           animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 1.1 } } }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-3"
+          variants={stagger}
+          className="max-w-[1100px]"
         >
-          <motion.a
+          <motion.div variants={fadeUp} className="mb-10 flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-white/60">
+            <span className="h-px w-8 bg-white/40" />
+            Design & Development Studio
+          </motion.div>
+
+          <motion.h1
             variants={fadeUp}
-            href="#contact"
-            className="group inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3.5 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]"
+            className="font-display text-[52px] font-medium leading-[1.02] tracking-[-0.03em] text-white sm:text-[64px] md:text-[80px] lg:text-[96px]"
           >
-            Book a Call
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </motion.a>
-          <motion.a
+            Design and build<br />
+            partner for<br />
+            <span className="italic font-light text-white/85">growing businesses.</span>
+          </motion.h1>
+
+          <motion.p
             variants={fadeUp}
-            href="#work"
-            className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium text-foreground bg-white/70 backdrop-blur-md border border-black/5 transition-all hover:-translate-y-0.5 hover:bg-white"
+            className="mt-10 max-w-2xl text-[19px] leading-[1.55] text-white/70 md:text-[20px]"
           >
-            View Our Work
-          </motion.a>
+            We help ambitious companies build stronger brands, better digital products,
+            and websites that drive growth.
+          </motion.p>
+
+          <motion.div variants={fadeUp} className="mt-12 flex flex-wrap items-center gap-4">
+            <a
+              href="#contact"
+              className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-[15px] font-medium text-brand transition-transform hover:-translate-y-0.5"
+            >
+              Book a Call
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+            <a
+              href="#services"
+              className="group inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
+            >
+              Our Services
+            </a>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 1 }}
+          className="mt-24 flex items-end justify-between text-[13px] text-white/50"
+        >
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+            </span>
+            Available for new projects — 2026
+          </div>
+          <div className="hidden md:block">Scroll to explore</div>
         </motion.div>
       </div>
     </section>
@@ -272,258 +311,148 @@ function Hero() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                          ANIMATED SERVICE ICONS                            */
+/*                                  SECTION                                   */
 /* -------------------------------------------------------------------------- */
-function AnimatedIcon({ type, active }: { type: string; active: boolean }) {
-  const common = "h-full w-full";
-  const stroke = "currentColor";
-  if (type === "brand") {
-    return (
-      <svg viewBox="0 0 100 100" className={common} fill="none" stroke={stroke} strokeWidth="1.5">
-        <motion.circle
-          cx="50" cy="50" r="30"
-          animate={active ? { r: [30, 34, 30] } : { r: 30 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.circle
-          cx="50" cy="50" r="18"
-          animate={active ? { r: [18, 14, 18] } : { r: 18 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.circle cx="50" cy="50" r="4" fill={stroke} />
-      </svg>
-    );
-  }
-  if (type === "product") {
-    return (
-      <svg viewBox="0 0 100 100" className={common} fill="none" stroke={stroke} strokeWidth="1.5">
-        <rect x="20" y="20" width="60" height="60" rx="8" />
-        <motion.line
-          x1="20" y1="38" x2="80" y2="38"
-          animate={active ? { x2: [80, 60, 80] } : {}}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.rect
-          x="30" y="48" width="20" height="6" rx="2" fill={stroke} opacity="0.6"
-          animate={active ? { width: [20, 32, 20] } : {}}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <rect x="30" y="60" width="40" height="4" rx="2" fill={stroke} opacity="0.3" />
-      </svg>
-    );
-  }
-  if (type === "framer") {
-    return (
-      <svg viewBox="0 0 100 100" className={common} fill="none" stroke={stroke} strokeWidth="1.5">
-        <motion.path
-          d="M25 25 L75 25 L50 50 L75 50 L50 75"
-          animate={active ? { pathLength: [1, 0.4, 1] } : { pathLength: 1 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </svg>
-    );
-  }
-  if (type === "code") {
-    return (
-      <svg viewBox="0 0 100 100" className={common} fill="none" stroke={stroke} strokeWidth="1.5">
-        <motion.path
-          d="M35 35 L20 50 L35 65"
-          animate={active ? { x: [0, -4, 0] } : {}}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.path
-          d="M65 35 L80 50 L65 65"
-          animate={active ? { x: [0, 4, 0] } : {}}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.line
-          x1="55" y1="30" x2="45" y2="70"
-          animate={active ? { opacity: [1, 0.3, 1] } : {}}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </svg>
-    );
-  }
-  if (type === "deck") {
-    return (
-      <svg viewBox="0 0 100 100" className={common} fill="none" stroke={stroke} strokeWidth="1.5">
-        <rect x="18" y="24" width="64" height="44" rx="4" />
-        <line x1="42" y1="68" x2="42" y2="80" />
-        <line x1="58" y1="68" x2="58" y2="80" />
-        <line x1="30" y1="80" x2="70" y2="80" />
-        <motion.polyline
-          points="28,58 40,46 52,52 72,34"
-          animate={active ? { pathLength: [0, 1, 1], opacity: [0, 1, 1] } : { pathLength: 1, opacity: 1 }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </svg>
-    );
-  }
-  return null;
+function SectionHeader({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
+  return (
+    <div className="mb-20 grid gap-10 md:grid-cols-12 md:gap-16">
+      <div className="md:col-span-4">
+        <div className="flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-subtle">
+          <span className="h-px w-6 bg-hairline" />
+          {eyebrow}
+        </div>
+      </div>
+      <div className="md:col-span-8">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.9, ease: EASE }}
+          className="text-[40px] font-medium leading-[1.05] tracking-[-0.025em] text-ink sm:text-[48px] md:text-[56px]"
+        >
+          {title}
+        </motion.h2>
+        {intro && (
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}
+            className="mt-8 max-w-2xl text-[19px] leading-[1.55] text-subtle"
+          >
+            {intro}
+          </motion.p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 /* -------------------------------------------------------------------------- */
 /*                                  SERVICES                                  */
 /* -------------------------------------------------------------------------- */
-const services = [
+const SERVICES = [
   {
-    icon: "brand",
-    fallback: Palette,
     title: "Brand Identity",
-    desc: "Build a brand people remember and trust.",
-    subs: ["Brand Strategy", "Visual Identity", "Logo Design", "Brand Guidelines", "Messaging", "Social Media Assets"],
+    description:
+      "We craft identities that feel unmistakably yours — clear positioning, considered systems, and visual language that scales across every touchpoint.",
+    items: ["Brand Strategy", "Visual Identity", "Logo Systems", "Brand Guidelines", "Naming"],
   },
   {
-    icon: "product",
-    fallback: Layout,
     title: "Product Design",
-    desc: "Design products that are intuitive, scalable, and user-focused.",
-    subs: ["UX Design", "UI Design", "User Flows", "Wireframes", "Design Systems", "Product Audits"],
+    description:
+      "From first sketch to shipped product, we design digital experiences that are intuitive to use and a pleasure to look at.",
+    items: ["UX Research", "Interaction Design", "Design Systems", "Prototyping", "Mobile & Web Apps"],
   },
   {
-    icon: "framer",
-    fallback: Sparkles,
     title: "Framer & Webflow Development",
-    desc: "High-converting websites built for growth.",
-    subs: ["Framer Websites", "Webflow Websites", "Landing Pages", "CMS Setup", "SEO Optimization", "Performance Optimization"],
+    description:
+      "Marketing sites built on the tools your team can actually use — fast to launch, easy to update, and finished to a studio standard.",
+    items: ["Framer Sites", "Webflow Sites", "CMS Setup", "SEO Foundations", "Handover & Training"],
   },
   {
-    icon: "code",
-    fallback: Code2,
     title: "Custom Development",
-    desc: "Custom digital products built with modern technologies.",
-    subs: ["React Development", "Next.js Applications", "SaaS Platforms", "Internal Tools", "API Integrations", "Custom Dashboards"],
+    description:
+      "When off-the-shelf tools stop scaling, we build production-grade web apps with modern stacks and long-term maintainability in mind.",
+    items: ["Web Applications", "React & Next.js", "API Integrations", "Performance", "Ongoing Support"],
   },
   {
-    icon: "deck",
-    fallback: Presentation,
     title: "Pitch Deck Design",
-    desc: "Investor-ready presentations that tell a compelling story.",
-    subs: ["Fundraising Decks", "Sales Decks", "Startup Storytelling", "Presentation Design", "Data Visualization", "Executive Summaries"],
+    description:
+      "Investor-ready decks that tell a sharper story — clear narrative, considered typography, and visuals that earn attention in the room.",
+    items: ["Narrative", "Deck Design", "Data Visualisation", "Investor Materials"],
   },
-];
+] as const;
 
 function Services() {
   const [open, setOpen] = useState<number | null>(0);
-  return (
-    <section id="services" className="relative py-28 md:py-40">
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={stagger}
-          className="max-w-3xl"
-        >
-          <motion.p variants={fadeUp} className="text-sm uppercase tracking-widest text-muted-foreground">
-            Services
-          </motion.p>
-          <motion.h2
-            variants={fadeUp}
-            className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.05] text-foreground"
-          >
-            Everything you need to launch and grow
-          </motion.h2>
-          <motion.p variants={fadeUp} className="mt-6 text-lg text-muted-foreground max-w-xl">
-            From your first idea to your next funding round, we help you create experiences people remember.
-          </motion.p>
-        </motion.div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={stagger}
-          className="mt-16 space-y-4"
-        >
-          {services.map((s, i) => {
+  return (
+    <section id="services" className="border-t border-hairline bg-white py-28 md:py-32">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <SectionHeader
+          eyebrow="Services"
+          title="What we do."
+          intro="A focused set of services for founders and product teams — brand, product, and web, delivered together."
+        />
+
+        <div className="mt-4 border-t border-hairline">
+          {SERVICES.map((s, i) => {
             const isOpen = open === i;
             return (
-              <motion.div
-                key={s.title}
-                variants={fadeUp}
-                layout
-                transition={{ layout: { duration: 0.5, ease: EASE } }}
-                className={`group relative overflow-hidden rounded-3xl border transition-all ${
-                  isOpen ? "border-foreground/20 bg-white shadow-[0_20px_60px_-20px_rgba(15,23,42,0.15)]" : "border-black/8 bg-white hover:border-foreground/20 hover:shadow-[0_10px_30px_-15px_rgba(15,23,42,0.12)]"
-                }`}
-              >
+              <div key={s.title} className="border-b border-hairline">
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="w-full text-left px-6 md:px-10 py-8 md:py-10 flex items-center gap-6 md:gap-10"
+                  className="group flex w-full items-center justify-between gap-8 py-8 text-left md:py-10"
+                  aria-expanded={isOpen}
                 >
-                  <div
-                    className={`shrink-0 h-20 w-20 md:h-[92px] md:w-[92px] rounded-2xl flex items-center justify-center transition-colors ${
-                      isOpen ? "bg-foreground text-primary-foreground" : "bg-secondary text-foreground group-hover:bg-foreground group-hover:text-primary-foreground"
-                    }`}
-                  >
-                    <div className="h-11 w-11 md:h-14 md:w-14">
-                      <AnimatedIcon type={s.icon} active={isOpen} />
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground tabular-nums">
-                      <span>0{i + 1}</span>
-                      <span className="h-px w-8 bg-border" />
-                    </div>
-                    <h3 className="mt-2 text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground leading-tight">
+                  <div className="flex items-baseline gap-6 md:gap-10">
+                    <span className="w-8 font-mono text-[13px] text-subtle md:w-12 md:text-[14px]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-[28px] font-medium tracking-[-0.02em] text-ink transition-colors group-hover:text-brand sm:text-[36px] md:text-[44px]">
                       {s.title}
-                    </h3>
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.p
-                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                          animate={{ opacity: 1, height: "auto", marginTop: 12 }}
-                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                          transition={{ duration: 0.4, ease: EASE }}
-                          className="text-muted-foreground text-base md:text-lg max-w-2xl overflow-hidden"
-                        >
-                          {s.desc}
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
+                    </span>
                   </div>
-                  <span
-                    className={`shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all ${
-                      isOpen ? "bg-foreground text-primary-foreground border-foreground rotate-180" : "border-border bg-white text-foreground"
-                    }`}
+                  <motion.span
+                    animate={{ rotate: isOpen ? 45 : 0 }}
+                    transition={{ duration: 0.45, ease: EASE }}
+                    className="shrink-0 text-subtle"
                   >
-                    {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                  </span>
+                    <Plus className="h-6 w-6 md:h-7 md:w-7" />
+                  </motion.span>
                 </button>
 
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
+                      key="content"
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.45, ease: EASE }}
+                      transition={{ duration: 0.55, ease: EASE }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 md:px-10 pb-10 pl-[calc(1.5rem+80px+1.5rem)] md:pl-[calc(2.5rem+92px+2.5rem)]">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
-                          {s.subs.map((sub, j) => (
-                            <motion.div
-                              key={sub}
-                              initial={{ opacity: 0, x: -8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.05 * j, duration: 0.4, ease: EASE }}
-                              className="flex items-center gap-2.5 text-sm md:text-base text-foreground/80"
-                            >
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-lime" />
-                              {sub}
-                            </motion.div>
+                      <div className="grid gap-10 pb-12 md:grid-cols-12 md:gap-16 md:pl-[calc(3rem+2.5rem)]">
+                        <p className="text-[18px] leading-[1.6] text-subtle md:col-span-6 md:text-[19px]">
+                          {s.description}
+                        </p>
+                        <ul className="grid gap-3 md:col-span-6 md:grid-cols-2">
+                          {s.items.map((it) => (
+                            <li key={it} className="flex items-center gap-3 text-[16px] text-ink">
+                              <span className="text-brand">✦</span>
+                              {it}
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -532,111 +461,114 @@ function Services() {
 /* -------------------------------------------------------------------------- */
 /*                                    WORK                                    */
 /* -------------------------------------------------------------------------- */
-const projects = [
-  {
-    no: "01",
-    name: "Nova AI",
-    tags: ["Brand identity", "Website design", "Framer"],
-    desc: "An AI workflow platform that needed a premium brand and launch-ready website.",
-    img: projectNova,
-  },
-  {
-    no: "02",
-    name: "Pulse Health",
-    tags: ["Product design", "Webflow"],
-    desc: "A healthcare startup simplifying patient engagement through digital experiences.",
-    img: projectPulse,
-  },
-  {
-    no: "03",
-    name: "Atlas Ventures",
-    tags: ["Brand identity", "Investor deck"],
-    desc: "A venture-backed startup preparing for fundraising and market expansion.",
-    img: projectAtlas,
-  },
-];
+const PROJECTS = [
+  { title: "Nova AI", tag: "Brand & Product", year: "2025", img: projectNova, meta: "AI writing platform" },
+  { title: "Pulse Health", tag: "Product Design", year: "2025", img: projectPulse, meta: "Digital health app" },
+  { title: "Atlas Ventures", tag: "Brand & Web", year: "2024", img: projectAtlas, meta: "Early-stage VC firm" },
+] as const;
 
-function ProjectCard({ p, i }: { p: (typeof projects)[number]; i: number }) {
-  const ref = useRef<HTMLAnchorElement>(null);
+function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
+  const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+
   return (
-    <motion.a
+    <motion.article
       ref={ref}
-      href="#"
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.8, delay: i * 0.06, ease: EASE }}
-      className="group grid grid-cols-1 md:grid-cols-12 gap-6 rounded-3xl border border-black/8 bg-white p-4 md:p-6 transition-all hover:-translate-y-1 hover:shadow-[0_30px_80px_-30px_rgba(15,23,42,0.25)]"
+      transition={{ duration: 1, ease: EASE, delay: i * 0.05 }}
+      className="group"
     >
-      <div className="md:col-span-7 relative overflow-hidden rounded-2xl aspect-[4/3] md:aspect-[16/10] bg-secondary">
-        <motion.img
-          src={p.img}
-          alt={p.name}
-          loading="lazy"
-          width={1200}
-          height={900}
-          style={{ y: imgY, scale: 1.15 }}
-          className="h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-125"
-        />
-        <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-2xl pointer-events-none" />
-      </div>
-      <div className="md:col-span-5 flex flex-col justify-between p-4 md:p-6">
-        <div>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Project {p.no}</span>
-            <span>2025</span>
-          </div>
-          <h3 className="mt-6 text-3xl md:text-4xl font-semibold text-foreground">{p.name}</h3>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {p.tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-border bg-white px-3 py-1 text-xs text-muted-foreground"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-          <p className="mt-6 text-muted-foreground leading-relaxed">{p.desc}</p>
+      <a href="#contact" className="block">
+        <div className="relative mb-8 overflow-hidden rounded-xl bg-[#f5f5f5]" style={{ aspectRatio: "16/10" }}>
+          <motion.img
+            src={p.img}
+            alt={p.title}
+            style={{ y }}
+            className="absolute inset-0 h-[112%] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+          />
         </div>
-        <div className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-foreground">
-          View Case Study
-          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <div className="flex items-baseline justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-4 text-[13px] uppercase tracking-[0.18em] text-subtle">
+              <span>{p.tag}</span>
+              <span className="h-px w-4 bg-hairline" />
+              <span>{p.year}</span>
+            </div>
+            <h3 className="mt-3 text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+              {p.title}
+            </h3>
+            <p className="mt-1 text-[16px] text-subtle">{p.meta}</p>
+          </div>
+          <ArrowUpRight className="h-5 w-5 shrink-0 text-subtle transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
         </div>
-      </div>
-    </motion.a>
+      </a>
+    </motion.article>
   );
 }
 
 function Work() {
   return (
-    <section id="work" className="relative py-28 md:py-40 bg-white">
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={stagger}
-          className="flex flex-col md:flex-row md:items-end md:justify-between gap-6"
-        >
-          <div>
-            <motion.p variants={fadeUp} className="text-sm uppercase tracking-widest text-muted-foreground">
-              Selected Work
-            </motion.p>
-            <motion.h2 variants={fadeUp} className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.05]">
-              A few we're proud of
-            </motion.h2>
-          </div>
-          <motion.p variants={fadeUp} className="text-lg text-muted-foreground max-w-md">
-            Helping startups look credible, launch faster, and grow confidently.
-          </motion.p>
-        </motion.div>
+    <section id="work" className="border-t border-hairline bg-white py-28 md:py-32">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <SectionHeader
+          eyebrow="Selected Work"
+          title="Recent projects."
+          intro="A few of the teams we've partnered with — from early-stage brands to funded startups shipping to real users."
+        />
+        <div className="grid gap-20 md:gap-24">
+          {PROJECTS.map((p, i) => <ProjectCard key={p.title} p={p} i={i} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-        <div className="mt-16 space-y-6">
-          {projects.map((p, i) => (
-            <ProjectCard key={p.name} p={p} i={i} />
+/* -------------------------------------------------------------------------- */
+/*                                  PROCESS                                   */
+/* -------------------------------------------------------------------------- */
+const STEPS = [
+  { title: "Discover", body: "We start by listening — understanding your business, users, and the outcomes that actually matter.", symbol: "◐" },
+  { title: "Define", body: "We turn research into direction: sharp strategy, clear scope, and a shared point of view.", symbol: "◑" },
+  { title: "Design & Build", body: "We move in tight loops between design and code, shipping the work in visible increments.", symbol: "◕" },
+  { title: "Launch", body: "We ship confidently, then stay close — iterating on real feedback once it's in the world.", symbol: "●" },
+] as const;
+
+function Process() {
+  return (
+    <section id="process" className="border-t border-hairline bg-white py-28 md:py-32">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <SectionHeader
+          eyebrow="How We Work"
+          title="A calm, considered process."
+          intro="Four phases that keep the work moving without the noise."
+        />
+
+        <div className="mx-auto mt-8 max-w-2xl">
+          {STEPS.map((s, i) => (
+            <motion.div
+              key={s.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, ease: EASE, delay: i * 0.08 }}
+              className="group relative py-10 text-center"
+            >
+              <div className="mb-5 text-[22px] text-brand transition-transform duration-500 group-hover:scale-110">
+                {s.symbol}
+              </div>
+              <h3 className="text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+                {s.title}
+              </h3>
+              <p className="mx-auto mt-4 max-w-md text-[17px] leading-[1.6] text-subtle">
+                {s.body}
+              </p>
+              {i < STEPS.length - 1 && (
+                <div className="mx-auto mt-10 h-16 w-px bg-hairline" />
+              )}
+            </motion.div>
           ))}
         </div>
       </div>
@@ -645,235 +577,113 @@ function Work() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                              PROCESS TIMELINE                              */
+/*                                   TOOLS                                    */
 /* -------------------------------------------------------------------------- */
-const steps = [
-  { no: "01", title: "Discover", body: "We learn about your business, goals, users, and challenges." },
-  { no: "02", title: "Define", body: "We create a roadmap, align priorities, and establish direction." },
-  { no: "03", title: "Design & Build", body: "We design, iterate, and develop the solution." },
-  { no: "04", title: "Launch & Support", body: "We help launch confidently and continue improving after release." },
-];
-
-function Process() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 30%"] });
-  const lineScale = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
-
-  return (
-    <section id="process" className="relative py-28 md:py-40">
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={stagger}
-          className="max-w-3xl"
-        >
-          <motion.p variants={fadeUp} className="text-sm uppercase tracking-widest text-muted-foreground">
-            How we work
-          </motion.p>
-          <motion.h2 variants={fadeUp} className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.05]">
-            Simple process. Clear outcomes.
-          </motion.h2>
-        </motion.div>
-
-        <div ref={ref} className="mt-20 relative">
-          {/* Horizontal line desktop */}
-          <div className="hidden md:block absolute left-0 right-0 top-6 h-px bg-border" />
-          <motion.div
-            style={{ scaleX: lineScale, transformOrigin: "left" }}
-            className="hidden md:block absolute left-0 right-0 top-6 h-px bg-foreground"
-          />
-          {/* Vertical line mobile */}
-          <div className="md:hidden absolute left-6 top-0 bottom-0 w-px bg-border" />
-          <motion.div
-            style={{ scaleY: lineScale, transformOrigin: "top" }}
-            className="md:hidden absolute left-6 top-0 bottom-0 w-px bg-foreground"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
-            {steps.map((s, i) => (
-              <motion.div
-                key={s.no}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
-                className="relative pl-16 md:pl-0"
-              >
-                <div className="absolute md:relative left-0 md:left-auto top-0 flex items-center gap-3">
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.1 + 0.2, ease: EASE }}
-                    className="relative z-10 inline-flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-primary-foreground text-sm font-medium tabular-nums shadow-[0_8px_24px_-8px_rgba(15,23,42,0.35)]"
-                  >
-                    {s.no}
-                    <span className="absolute inset-0 rounded-full bg-lime/30 blur-md -z-10" />
-                  </motion.span>
-                </div>
-                <h3 className="mt-8 md:mt-10 text-2xl md:text-3xl font-semibold">{s.title}</h3>
-                <p className="mt-3 text-muted-foreground leading-relaxed">{s.body}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*                              TOOLS ECOSYSTEM                               */
-/* -------------------------------------------------------------------------- */
-const toolCategories: Array<{ cat: string; items: Array<{ name: string; symbol: string; color: string }> }> = [
+const TOOL_GROUPS: Array<{ title: string; tools: Array<{ name: string; icon: ReactNode }> }> = [
   {
-    cat: "Design",
-    items: [
-      { name: "Figma", symbol: "◇", color: "#F24E1E" },
-      { name: "Adobe", symbol: "A", color: "#DA1F26" },
-      { name: "Spline", symbol: "◈", color: "#0F172A" },
-      { name: "Rive", symbol: "▲", color: "#1D1D1D" },
+    title: "Design",
+    tools: [
+      { name: "Figma", icon: <FigmaIcon /> },
+      { name: "Framer", icon: <FramerIcon /> },
+      { name: "Photoshop", icon: <DotIcon color="#31A8FF" /> },
+      { name: "Illustrator", icon: <DotIcon color="#FF9A00" /> },
     ],
   },
   {
-    cat: "Build",
-    items: [
-      { name: "Framer", symbol: "F", color: "#0055FF" },
-      { name: "Webflow", symbol: "W", color: "#146EF5" },
-      { name: "React", symbol: "⚛", color: "#61DAFB" },
-      { name: "Next.js", symbol: "N", color: "#000000" },
+    title: "Build",
+    tools: [
+      { name: "React", icon: <ReactIcon /> },
+      { name: "Next.js", icon: <NextIcon /> },
+      { name: "Webflow", icon: <WebflowIcon /> },
+      { name: "Tailwind", icon: <TailwindIcon /> },
     ],
   },
   {
-    cat: "AI",
-    items: [
-      { name: "OpenAI", symbol: "✳", color: "#10A37F" },
-      { name: "Claude", symbol: "✦", color: "#D97757" },
-      { name: "Cursor", symbol: "⌘", color: "#0F172A" },
-      { name: "Perplexity", symbol: "✧", color: "#20B8CD" },
+    title: "AI",
+    tools: [
+      { name: "Claude", icon: <DotIcon color="#D97757" /> },
+      { name: "GPT", icon: <DotIcon color="#10a37f" /> },
+      { name: "Cursor", icon: <DotIcon color="#111111" /> },
+      { name: "Midjourney", icon: <DotIcon color="#111111" /> },
     ],
   },
   {
-    cat: "Automation",
-    items: [
-      { name: "n8n", symbol: "n", color: "#EA4B71" },
-      { name: "Make", symbol: "M", color: "#6D00CC" },
-      { name: "Zapier", symbol: "Z", color: "#FF4A00" },
+    title: "Automation",
+    tools: [
+      { name: "Zapier", icon: <DotIcon color="#FF4A00" /> },
+      { name: "Make", icon: <DotIcon color="#6D00CC" /> },
+      { name: "n8n", icon: <DotIcon color="#EA4B71" /> },
+      { name: "Airtable", icon: <DotIcon color="#FCB400" /> },
     ],
   },
   {
-    cat: "Project Management",
-    items: [
-      { name: "Notion", symbol: "N", color: "#000000" },
-      { name: "Linear", symbol: "L", color: "#5E6AD2" },
-      { name: "Slack", symbol: "#", color: "#4A154B" },
+    title: "Project Management",
+    tools: [
+      { name: "Linear", icon: <DotIcon color="#5E6AD2" /> },
+      { name: "Notion", icon: <DotIcon color="#111111" /> },
+      { name: "Slack", icon: <DotIcon color="#611F69" /> },
+      { name: "Loom", icon: <DotIcon color="#625DF5" /> },
     ],
   },
   {
-    cat: "Research",
-    items: [
-      { name: "Google Analytics", symbol: "G", color: "#E37400" },
-      { name: "Hotjar", symbol: "H", color: "#FD3A5C" },
+    title: "Research",
+    tools: [
+      { name: "Maze", icon: <DotIcon color="#111111" /> },
+      { name: "Dovetail", icon: <DotIcon color="#5D5FEF" /> },
+      { name: "Typeform", icon: <DotIcon color="#111111" /> },
+      { name: "Hotjar", icon: <DotIcon color="#FD3A5C" /> },
     ],
   },
 ];
 
-function ToolChip({ name, symbol, color, i }: { name: string; symbol: string; color: string; i: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 150, damping: 15 });
-  const sy = useSpring(y, { stiffness: 150, damping: 15 });
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy);
-      const max = 140;
-      if (dist < max) {
-        const f = (1 - dist / max) * 18;
-        x.set(-(dx / dist) * f);
-        y.set(-(dy / dist) * f);
-      } else {
-        x.set(0);
-        y.set(0);
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [x, y]);
-
-  return (
-    <motion.div
-      ref={ref}
-      style={{ x: sx, y: sy }}
-      animate={{ y: [0, -6, 0] }}
-      transition={{ duration: 4 + (i % 4), repeat: Infinity, ease: "easeInOut", delay: (i % 5) * 0.3 }}
-      className="flex flex-col items-center gap-2 group"
-    >
-      <div
-        className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-white border border-black/8 shadow-[0_10px_30px_-15px_rgba(15,23,42,0.15)] flex items-center justify-center text-2xl md:text-3xl font-bold transition-transform group-hover:scale-110"
-        style={{ color }}
-      >
-        {symbol}
-      </div>
-      <span className="text-xs text-muted-foreground">{name}</span>
-    </motion.div>
-  );
+function DotIcon({ color }: { color: string }) {
+  return <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: color }} />;
 }
+function FigmaIcon() { return <DotIcon color="#F24E1E" />; }
+function FramerIcon() { return <DotIcon color="#0055FF" />; }
+function ReactIcon() { return <DotIcon color="#61DAFB" />; }
+function NextIcon() { return <DotIcon color="#111111" />; }
+function WebflowIcon() { return <DotIcon color="#146EF5" />; }
+function TailwindIcon() { return <DotIcon color="#06B6D4" />; }
 
 function Tools() {
   return (
-    <section id="tools" className="relative py-28 md:py-40 bg-white overflow-hidden">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle_at_center,#e0f2fe,transparent_70%)] blur-3xl opacity-60" />
-      </div>
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={stagger}
-          className="max-w-3xl"
-        >
-          <motion.p variants={fadeUp} className="text-sm uppercase tracking-widest text-muted-foreground">
-            Toolkit
-          </motion.p>
-          <motion.h2 variants={fadeUp} className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.05]">
-            Built with modern tools
-          </motion.h2>
-          <motion.p variants={fadeUp} className="mt-6 text-lg text-muted-foreground max-w-xl">
-            A carefully assembled ecosystem for design, engineering, AI, and automation.
-          </motion.p>
-        </motion.div>
+    <section id="tools" className="border-t border-hairline bg-white py-28 md:py-32">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <SectionHeader
+          eyebrow="Toolkit"
+          title="Tools we work with."
+          intro="A pragmatic stack — chosen for craft, speed, and the teams we hand off to."
+        />
 
-        <div className="mt-16 space-y-14">
-          {toolCategories.map((c, ci) => (
+        <div className="grid gap-x-16 gap-y-16 md:grid-cols-2 md:gap-y-20">
+          {TOOL_GROUPS.map((g, gi) => (
             <motion.div
-              key={c.cat}
-              initial={{ opacity: 0, y: 20 }}
+              key={g.title}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, delay: ci * 0.05, ease: EASE }}
-              className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center"
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, ease: EASE, delay: (gi % 2) * 0.08 }}
             >
-              <div className="md:col-span-3">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">0{ci + 1}</p>
-                <h3 className="mt-2 text-2xl md:text-3xl font-semibold">{c.cat}</h3>
+              <div className="mb-6 flex items-baseline justify-between border-b border-hairline pb-4">
+                <h3 className="text-[13px] uppercase tracking-[0.22em] text-subtle">{g.title}</h3>
+                <span className="font-mono text-[13px] text-subtle">{String(gi + 1).padStart(2, "0")}</span>
               </div>
-              <div className="md:col-span-9 flex flex-wrap gap-6 md:gap-10 items-end">
-                {c.items.map((t, i) => (
-                  <ToolChip key={t.name} {...t} i={ci * 4 + i} />
+              <ul className="space-y-4">
+                {g.tools.map((t, ti) => (
+                  <motion.li
+                    key={t.name}
+                    initial={{ opacity: 0, x: -12 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.5, ease: EASE, delay: ti * 0.05 }}
+                    className="flex items-center gap-4 text-[18px] text-ink"
+                  >
+                    {t.icon}
+                    <span>{t.name}</span>
+                  </motion.li>
                 ))}
-              </div>
+              </ul>
             </motion.div>
           ))}
         </div>
@@ -885,59 +695,56 @@ function Tools() {
 /* -------------------------------------------------------------------------- */
 /*                                    FAQ                                     */
 /* -------------------------------------------------------------------------- */
-const faqs = [
-  { q: "What types of clients do you work with?", a: "We primarily work with startups, founders, SaaS companies, and growing businesses." },
-  { q: "Do you only work with funded startups?", a: "No. We work with businesses at different stages, from early ideas to established companies." },
-  { q: "Can you handle both design and development?", a: "Yes. We provide end-to-end support from strategy and design through development and launch." },
-  { q: "Do you work with Framer and Webflow?", a: "Absolutely. We build high-quality websites in both platforms depending on your needs." },
-  { q: "How much does a project cost?", a: "Every project is different. Most engagements start from a few thousand dollars and scale based on scope. Book a call and we'll provide a tailored estimate." },
-  { q: "How long does a project take?", a: "Most projects take between 2–8 weeks depending on complexity." },
-  { q: "Can you help with investor pitch decks?", a: "Yes. We help founders craft clear, persuasive decks for fundraising and presentations." },
-  { q: "Do you offer ongoing support?", a: "Yes. We offer post-launch support and long-term partnerships." },
-];
+const FAQS = [
+  { q: "How long does a typical project take?", a: "Most brand and website projects run 4–8 weeks. Product design and custom development engagements usually span 8–16 weeks, depending on scope. We'll give you an honest timeline before we start." },
+  { q: "How do you price your work?", a: "We work on fixed-scope project pricing or monthly retainers. Every quote is transparent, tied to clear deliverables, and shared before any commitments are made." },
+  { q: "Do you work with early-stage startups?", a: "Yes — a large part of our work is with pre-seed and seed-stage founders. We're used to moving quickly and making thoughtful trade-offs when the roadmap is still forming." },
+  { q: "Can you work alongside our in-house team?", a: "Absolutely. We often collaborate with in-house designers, engineers, and founders. We'll shape our process around how your team already works." },
+  { q: "What happens after launch?", a: "We stay close. Most clients continue with us on a lightweight retainer for iteration, improvements, and ongoing design and development support." },
+] as const;
 
 function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="relative py-28 md:py-40">
-      <div className="mx-auto max-w-4xl px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={stagger}
-          className="text-center"
-        >
-          <motion.p variants={fadeUp} className="text-sm uppercase tracking-widest text-muted-foreground">
-            FAQ
-          </motion.p>
-          <motion.h2 variants={fadeUp} className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.05]">
-            Frequently asked questions
-          </motion.h2>
-        </motion.div>
-
-        <div className="mt-14 divide-y divide-border rounded-3xl border border-black/8 bg-white overflow-hidden">
-          {faqs.map((f, i) => {
+    <section id="faq" className="border-t border-hairline bg-white py-28 md:py-32">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <SectionHeader eyebrow="FAQ" title="Common questions." />
+        <div className="border-t border-hairline">
+          {FAQS.map((f, i) => {
             const isOpen = open === i;
             return (
-              <div key={f.q}>
+              <div key={f.q} className="border-b border-hairline">
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-6 px-6 md:px-8 py-6 text-left transition-colors hover:bg-secondary"
+                  className="flex w-full items-center justify-between gap-8 py-7 text-left md:py-8"
+                  aria-expanded={isOpen}
                 >
-                  <span className="text-lg md:text-xl font-medium text-foreground">{f.q}</span>
-                  <span className={`shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all ${isOpen ? "bg-foreground text-primary-foreground border-foreground" : "border-border bg-white"}`}>
-                    {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                  <span className="text-[20px] font-medium tracking-[-0.01em] text-ink md:text-[22px]">
+                    {f.q}
                   </span>
+                  <motion.span
+                    animate={{ rotate: isOpen ? 45 : 0 }}
+                    transition={{ duration: 0.45, ease: EASE }}
+                    className="shrink-0 text-subtle"
+                  >
+                    <Plus className="h-5 w-5" />
+                  </motion.span>
                 </button>
-                <motion.div
-                  initial={false}
-                  animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                  transition={{ duration: 0.35, ease: EASE }}
-                  className="overflow-hidden"
-                >
-                  <p className="px-6 md:px-8 pb-6 text-muted-foreground leading-relaxed max-w-2xl">{f.a}</p>
-                </motion.div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.55, ease: EASE }}
+                      className="overflow-hidden"
+                    >
+                      <p className="max-w-2xl pb-8 text-[18px] leading-[1.65] text-subtle">
+                        {f.a}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
@@ -952,132 +759,80 @@ function FAQ() {
 /* -------------------------------------------------------------------------- */
 function Contact() {
   return (
-    <section id="contact" className="relative py-28 md:py-40 overflow-hidden">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="contact" className="relative overflow-hidden bg-brand text-white">
+      <div className="mx-auto max-w-[1400px] px-6 py-32 md:px-10 md:py-40">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: EASE }}
-          className="relative overflow-hidden rounded-[2rem] md:rounded-[3rem] bg-foreground text-primary-foreground px-6 py-20 md:px-16 md:py-32"
+          transition={{ duration: 1, ease: EASE }}
+          className="max-w-4xl"
         >
-          <motion.div
-            animate={{ x: [0, 60, 0], y: [0, -40, 0], scale: [1, 1.15, 1] }}
-            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-lime/40 blur-3xl"
-          />
-          <motion.div
-            animate={{ x: [0, -50, 0], y: [0, 40, 0], scale: [1, 1.2, 1] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full bg-cyan-400/20 blur-3xl"
-          />
-          <motion.div
-            animate={{ x: [0, 40, -40, 0], y: [0, -30, 30, 0] }}
-            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-400/15 blur-3xl"
-          />
-
-          <div className="relative max-w-4xl">
-            <p className="text-sm uppercase tracking-widest text-primary-foreground/60">Let's talk</p>
-            <h2 className="mt-4 text-5xl md:text-7xl lg:text-8xl font-semibold leading-[1.02] tracking-tight">
-              Tell us what<br />you're building
-            </h2>
-            <p className="mt-8 text-lg md:text-xl text-primary-foreground/70 max-w-2xl leading-relaxed">
-              Whether you're launching a startup, redesigning a product, or preparing for your next funding round, we'd love to hear your story.
-            </p>
-            <div className="mt-12 flex flex-wrap gap-4 items-center">
-              <a
-                href="#"
-                className="group relative inline-flex items-center gap-3 rounded-full bg-lime px-8 py-5 text-base md:text-lg font-semibold text-lime-foreground transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_-10px_rgba(190,242,100,0.5)]"
-              >
-                <span className="absolute inset-0 rounded-full bg-lime blur-xl opacity-40 -z-10 group-hover:opacity-70 transition-opacity" />
-                <Calendar className="h-5 w-5" />
-                Book a Call
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </a>
-              <a
-                href="mailto:hello@upriser.studio"
-                className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 px-6 py-4 text-sm font-medium text-primary-foreground transition-all hover:bg-primary-foreground/10 hover:-translate-y-0.5"
-              >
-                <Mail className="h-4 w-4" />
-                Send an Email
-              </a>
-            </div>
-            <p className="mt-8 text-sm text-primary-foreground/50">Typically responds within 24 hours.</p>
+          <div className="flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-white/60">
+            <span className="h-px w-8 bg-white/40" />
+            Let's Talk
+          </div>
+          <h2 className="mt-8 text-[44px] font-medium leading-[1.05] tracking-[-0.025em] text-white sm:text-[64px] md:text-[80px]">
+            Have a project in mind?
+          </h2>
+          <p className="mt-8 max-w-xl text-[19px] leading-[1.55] text-white/70 md:text-[20px]">
+            We'd love to hear about it. Send us a note or book an intro call —
+            we usually reply within a day.
+          </p>
+          <div className="mt-12 flex flex-wrap items-center gap-4">
+            <a
+              href="mailto:hello@upriser.studio"
+              className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-[15px] font-medium text-brand transition-transform hover:-translate-y-0.5"
+            >
+              hello@upriser.studio
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+            <a
+              href="#"
+              className="inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
+            >
+              Book a Call
+            </a>
           </div>
         </motion.div>
+
+        <div className="mt-24 grid gap-10 border-t border-white/15 pt-12 text-[15px] text-white/60 md:grid-cols-4">
+          <div>
+            <div className="text-white">Upriser<span className="text-white/50">®</span></div>
+            <p className="mt-2">Design & development studio</p>
+          </div>
+          <div>
+            <div className="mb-3 text-[13px] uppercase tracking-[0.22em] text-white/40">Studio</div>
+            <p>Remote — worldwide</p>
+          </div>
+          <div>
+            <div className="mb-3 text-[13px] uppercase tracking-[0.22em] text-white/40">Contact</div>
+            <p>hello@upriser.studio</p>
+          </div>
+          <div>
+            <div className="mb-3 text-[13px] uppercase tracking-[0.22em] text-white/40">Follow</div>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-white">Twitter</a>
+              <a href="#" className="hover:text-white">Dribbble</a>
+              <a href="#" className="hover:text-white">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+        <div className="mt-12 flex items-center justify-between text-[13px] text-white/40">
+          <div>© {new Date().getFullYear()} Upriser Studio</div>
+          <div>All rights reserved</div>
+        </div>
       </div>
     </section>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   FOOTER                                   */
+/*                                   LANDING                                  */
 /* -------------------------------------------------------------------------- */
-function Footer() {
-  return (
-    <footer className="border-t border-border py-16 bg-white">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-          <div className="md:col-span-5">
-            <div className="flex items-center gap-2 font-bold tracking-tight">
-              <span className="inline-block h-2 w-2 rounded-full bg-lime" />
-              UPRISER
-            </div>
-            <p className="mt-4 text-muted-foreground max-w-sm leading-relaxed">
-              Designing brands, products, and digital experiences for ambitious companies.
-            </p>
-            <p className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" /> Gulmarg, Kashmir
-            </p>
-          </div>
-          <div className="md:col-span-3">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Quick Links</p>
-            <ul className="mt-5 space-y-3 text-foreground">
-              {["Services", "Work", "Process", "FAQ", "Contact"].map((l) => (
-                <li key={l}>
-                  <a href={`#${l.toLowerCase()}`} className="hover:text-muted-foreground transition-colors">
-                    {l}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="md:col-span-2">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Social</p>
-            <ul className="mt-5 space-y-3 text-foreground">
-              {["Dribbble", "LinkedIn", "X (Twitter)"].map((l) => (
-                <li key={l}>
-                  <a href="#" className="hover:text-muted-foreground transition-colors inline-flex items-center gap-1">
-                    {l} <ArrowUpRight className="h-3 w-3" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="md:col-span-2">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Contact</p>
-            <a
-              href="mailto:hello@upriser.studio"
-              className="mt-5 inline-block text-foreground hover:text-muted-foreground transition-colors"
-            >
-              hello@upriser.studio
-            </a>
-          </div>
-        </div>
-
-        <div className="mt-16 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2025 Upriser. All rights reserved.</p>
-          <p>Made with care in Kashmir.</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 function Landing() {
   return (
-    <main className="relative bg-white">
+    <main className="bg-white text-ink">
       <Nav />
       <Hero />
       <Services />
@@ -1086,7 +841,6 @@ function Landing() {
       <Tools />
       <FAQ />
       <Contact />
-      <Footer />
     </main>
   );
 }
