@@ -6,6 +6,7 @@ import { ArrowUpRight, Plus } from "lucide-react";
 import projectNova from "@/assets/project-nova.jpg";
 import projectPulse from "@/assets/project-pulse.jpg";
 import projectAtlas from "@/assets/project-atlas.jpg";
+import projectZoonRun from "@/assets/project-zoonrun.jpg";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -468,12 +469,23 @@ const PROJECTS = [
   { title: "Nova AI", tag: "Brand & Product", year: "2025", img: projectNova, meta: "AI writing platform" },
   { title: "Pulse Health", tag: "Product Design", year: "2025", img: projectPulse, meta: "Digital health app" },
   { title: "Atlas Ventures", tag: "Brand & Web", year: "2024", img: projectAtlas, meta: "Early-stage VC firm" },
+  {
+    title: "Zoon Run",
+    tag: "Brand & Web Development",
+    year: "2026",
+    img: projectZoonRun,
+    meta: "Marathon festival — Baramulla, Kashmir",
+    url: "https://zoonrun.in",
+  },
 ] as const;
 
 function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+
+  const href = "url" in p && p.url ? p.url : "#contact";
+  const isExternal = href.startsWith("http");
 
   return (
     <motion.article
@@ -484,7 +496,7 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
       transition={{ duration: 1, ease: EASE, delay: i * 0.05 }}
       className="group"
     >
-      <a href="#contact" className="block">
+      <a href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} className="block">
         <div className="relative mb-8 overflow-hidden rounded-xl bg-[#f5f5f5]" style={{ aspectRatio: "16/10" }}>
           <motion.img
             src={p.img}
@@ -811,7 +823,7 @@ function Contact() {
           </div>
           <div>
             <div className="mb-3 text-[13px] uppercase tracking-[0.22em] text-white/40">Contact</div>
-            <p>hello@upriser.studio</p>
+            <p>upriserstudios@gmail.com</p>
           </div>
           <div>
             <div className="mb-3 text-[13px] uppercase tracking-[0.22em] text-white/40">Follow</div>
