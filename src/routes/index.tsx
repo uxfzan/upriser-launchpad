@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -319,35 +319,32 @@ function Hero() {
 /* -------------------------------------------------------------------------- */
 function SectionHeader({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
   return (
-    <div className="mb-20 grid gap-10 md:grid-cols-12 md:gap-16">
-      <div className="md:col-span-4">
-        <div className="flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-subtle">
-          <span className="h-px w-6 bg-hairline" />
-          {eyebrow}
-        </div>
+    <div className="mx-auto mb-20 flex max-w-3xl flex-col items-center text-center">
+      <div className="flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-subtle">
+        <span className="h-px w-6 bg-hairline" />
+        {eyebrow}
+        <span className="h-px w-6 bg-hairline" />
       </div>
-      <div className="md:col-span-8">
-        <motion.h2
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.9, ease: EASE }}
+        className="mt-6 text-[40px] font-medium leading-[1.05] tracking-[-0.025em] text-ink sm:text-[48px] md:text-[56px]"
+      >
+        {title}
+      </motion.h2>
+      {intro && (
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.9, ease: EASE }}
-          className="text-[40px] font-medium leading-[1.05] tracking-[-0.025em] text-ink sm:text-[48px] md:text-[56px]"
+          transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}
+          className="mt-6 max-w-2xl text-[19px] leading-[1.55] text-subtle"
         >
-          {title}
-        </motion.h2>
-        {intro && (
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}
-            className="mt-8 max-w-2xl text-[19px] leading-[1.55] text-subtle"
-          >
-            {intro}
-          </motion.p>
-        )}
-      </div>
+          {intro}
+        </motion.p>
+      )}
     </div>
   );
 }
@@ -389,7 +386,7 @@ const SERVICES = [
 ] as const;
 
 function Services() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <section id="services" className="border-t border-hairline bg-white py-28 md:py-32">
@@ -496,8 +493,13 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
       transition={{ duration: 1, ease: EASE, delay: i * 0.05 }}
       className="group"
     >
-      <a href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} className="block">
-        <div className="relative mb-8 overflow-hidden rounded-xl bg-[#f5f5f5]" style={{ aspectRatio: "16/10" }}>
+      <a
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="block overflow-hidden rounded-2xl border border-hairline bg-white p-4 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(16,54,125,0.25)] md:p-5"
+      >
+        <div className="relative overflow-hidden rounded-xl bg-[#f5f5f5]" style={{ aspectRatio: "16/9" }}>
           <motion.img
             src={p.img}
             alt={p.title}
@@ -505,17 +507,17 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
             className="absolute inset-0 h-[112%] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
           />
         </div>
-        <div className="flex items-baseline justify-between gap-8">
+        <div className="flex items-baseline justify-between gap-8 px-2 pb-2 pt-6">
           <div>
-            <div className="flex items-center gap-4 text-[13px] uppercase tracking-[0.18em] text-subtle">
+            <div className="flex items-center gap-4 text-[12px] uppercase tracking-[0.18em] text-subtle">
               <span>{p.tag}</span>
               <span className="h-px w-4 bg-hairline" />
               <span>{p.year}</span>
             </div>
-            <h3 className="mt-3 text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+            <h3 className="mt-3 text-[24px] font-medium tracking-[-0.02em] text-ink md:text-[26px]">
               {p.title}
             </h3>
-            <p className="mt-1 text-[16px] text-subtle">{p.meta}</p>
+            <p className="mt-1 text-[15px] text-subtle">{p.meta}</p>
           </div>
           <ArrowUpRight className="h-5 w-5 shrink-0 text-subtle transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
         </div>
@@ -533,7 +535,7 @@ function Work() {
           title="Recent projects."
           intro="A few of the teams we've partnered with — from early-stage brands to funded startups shipping to real users."
         />
-        <div className="grid gap-20 md:gap-24">
+        <div className="grid gap-8 md:grid-cols-2 md:gap-10">
           {PROJECTS.map((p, i) => <ProjectCard key={p.title} p={p} i={i} />)}
         </div>
       </div>
@@ -552,6 +554,10 @@ const STEPS = [
 ] as const;
 
 function Process() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 60%"] });
+  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
     <section id="process" className="border-t border-hairline bg-white py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
@@ -561,28 +567,31 @@ function Process() {
           intro="Four phases that keep the work moving without the noise."
         />
 
-        <div className="mx-auto mt-8 max-w-2xl">
+        <div ref={ref} className="relative mx-auto mt-8 max-w-2xl">
+          {/* animated vertical line */}
+          <div className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-hairline" />
+          <motion.div
+            style={{ scaleY: lineScale, transformOrigin: "top" }}
+            className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-brand"
+          />
           {STEPS.map((s, i) => (
             <motion.div
               key={s.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, ease: EASE, delay: i * 0.08 }}
-              className="group relative py-10 text-center"
+              transition={{ duration: 0.7, ease: EASE, delay: i * 0.06 }}
+              className="group relative py-6 text-center"
             >
-              <div className="mb-5 text-[22px] text-brand transition-transform duration-500 group-hover:scale-110">
+              <div className="relative z-10 mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand transition-transform duration-500 group-hover:scale-110">
                 {s.symbol}
               </div>
-              <h3 className="text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+              <h3 className="text-[26px] font-medium tracking-[-0.02em] text-ink md:text-[30px]">
                 {s.title}
               </h3>
-              <p className="mx-auto mt-4 max-w-md text-[17px] leading-[1.6] text-subtle">
+              <p className="mx-auto mt-2 max-w-md text-[16px] leading-[1.6] text-subtle">
                 {s.body}
               </p>
-              {i < STEPS.length - 1 && (
-                <div className="mx-auto mt-10 h-16 w-px bg-hairline" />
-              )}
             </motion.div>
           ))}
         </div>
@@ -594,72 +603,118 @@ function Process() {
 /* -------------------------------------------------------------------------- */
 /*                                   TOOLS                                    */
 /* -------------------------------------------------------------------------- */
-const TOOL_GROUPS: Array<{ title: string; tools: Array<{ name: string; icon: ReactNode }> }> = [
+type Tool = { name: string; slug: string; color: string };
+const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
   {
     title: "Design",
     tools: [
-      { name: "Figma", icon: <FigmaIcon /> },
-      { name: "Framer", icon: <FramerIcon /> },
-      { name: "Photoshop", icon: <DotIcon color="#31A8FF" /> },
-      { name: "Illustrator", icon: <DotIcon color="#FF9A00" /> },
+      { name: "Figma", slug: "figma", color: "F24E1E" },
+      { name: "Framer", slug: "framer", color: "0055FF" },
+      { name: "Photoshop", slug: "adobephotoshop", color: "31A8FF" },
+      { name: "Illustrator", slug: "adobeillustrator", color: "FF9A00" },
+      { name: "Sketch", slug: "sketch", color: "F7B500" },
+      { name: "After Effects", slug: "adobeaftereffects", color: "9999FF" },
     ],
   },
   {
     title: "Build",
     tools: [
-      { name: "React", icon: <ReactIcon /> },
-      { name: "Next.js", icon: <NextIcon /> },
-      { name: "Webflow", icon: <WebflowIcon /> },
-      { name: "Tailwind", icon: <TailwindIcon /> },
+      { name: "React", slug: "react", color: "61DAFB" },
+      { name: "Next.js", slug: "nextdotjs", color: "111111" },
+      { name: "Webflow", slug: "webflow", color: "146EF5" },
+      { name: "Tailwind", slug: "tailwindcss", color: "06B6D4" },
+      { name: "TypeScript", slug: "typescript", color: "3178C6" },
+      { name: "Node.js", slug: "nodedotjs", color: "5FA04E" },
     ],
   },
   {
     title: "AI",
     tools: [
-      { name: "Claude", icon: <DotIcon color="#D97757" /> },
-      { name: "GPT", icon: <DotIcon color="#10a37f" /> },
-      { name: "Cursor", icon: <DotIcon color="#111111" /> },
-      { name: "Midjourney", icon: <DotIcon color="#111111" /> },
+      { name: "Claude", slug: "anthropic", color: "D97757" },
+      { name: "OpenAI", slug: "openai", color: "10A37F" },
+      { name: "Cursor", slug: "cursor", color: "111111" },
+      { name: "Midjourney", slug: "midjourney", color: "111111" },
+      { name: "Perplexity", slug: "perplexity", color: "1FB8CD" },
+      { name: "Runway", slug: "runway", color: "111111" },
     ],
   },
   {
     title: "Automation",
     tools: [
-      { name: "Zapier", icon: <DotIcon color="#FF4A00" /> },
-      { name: "Make", icon: <DotIcon color="#6D00CC" /> },
-      { name: "n8n", icon: <DotIcon color="#EA4B71" /> },
-      { name: "Airtable", icon: <DotIcon color="#FCB400" /> },
+      { name: "Zapier", slug: "zapier", color: "FF4A00" },
+      { name: "Make", slug: "make", color: "6D00CC" },
+      { name: "n8n", slug: "n8n", color: "EA4B71" },
+      { name: "Airtable", slug: "airtable", color: "FCB400" },
+      { name: "Retool", slug: "retool", color: "3D3D3D" },
     ],
   },
   {
     title: "Project Management",
     tools: [
-      { name: "Linear", icon: <DotIcon color="#5E6AD2" /> },
-      { name: "Notion", icon: <DotIcon color="#111111" /> },
-      { name: "Slack", icon: <DotIcon color="#611F69" /> },
-      { name: "Loom", icon: <DotIcon color="#625DF5" /> },
+      { name: "Linear", slug: "linear", color: "5E6AD2" },
+      { name: "Notion", slug: "notion", color: "111111" },
+      { name: "Slack", slug: "slack", color: "611F69" },
+      { name: "Loom", slug: "loom", color: "625DF5" },
+      { name: "Figjam", slug: "figma", color: "F24E1E" },
+      { name: "GitHub", slug: "github", color: "111111" },
     ],
   },
   {
     title: "Research",
     tools: [
-      { name: "Maze", icon: <DotIcon color="#111111" /> },
-      { name: "Dovetail", icon: <DotIcon color="#5D5FEF" /> },
-      { name: "Typeform", icon: <DotIcon color="#111111" /> },
-      { name: "Hotjar", icon: <DotIcon color="#FD3A5C" /> },
+      { name: "Maze", slug: "maze", color: "111111" },
+      { name: "Dovetail", slug: "dovetail", color: "5D5FEF" },
+      { name: "Typeform", slug: "typeform", color: "111111" },
+      { name: "Hotjar", slug: "hotjar", color: "FD3A5C" },
+      { name: "Miro", slug: "miro", color: "FFD02F" },
     ],
   },
 ];
 
-function DotIcon({ color }: { color: string }) {
-  return <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: color }} />;
+function ToolCard({ t }: { t: Tool }) {
+  return (
+    <motion.div
+      whileHover={{ y: -6, rotate: -2, scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 320, damping: 18 }}
+      className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-colors hover:border-brand/30 hover:shadow-[0_20px_40px_-20px_rgba(16,54,125,0.35)]"
+    >
+      <img
+        src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
+        alt={t.name}
+        className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+        loading="lazy"
+      />
+      <span className="text-[13px] font-medium text-ink/80 transition-colors group-hover:text-ink">
+        {t.name}
+      </span>
+    </motion.div>
+  );
 }
-function FigmaIcon() { return <DotIcon color="#F24E1E" />; }
-function FramerIcon() { return <DotIcon color="#0055FF" />; }
-function ReactIcon() { return <DotIcon color="#61DAFB" />; }
-function NextIcon() { return <DotIcon color="#111111" />; }
-function WebflowIcon() { return <DotIcon color="#146EF5" />; }
-function TailwindIcon() { return <DotIcon color="#06B6D4" />; }
+
+function ToolMarquee({ tools, reverse = false }: { tools: Tool[]; reverse?: boolean }) {
+  const [paused, setPaused] = useState(false);
+  const loop = useMemo(() => [...tools, ...tools, ...tools], [tools]);
+  const duration = Math.max(18, tools.length * 4);
+
+  return (
+    <div
+      className="group/marquee relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <motion.div
+        className="flex w-max py-2"
+        animate={{ x: reverse ? ["-33.333%", "0%"] : ["0%", "-33.333%"] }}
+        transition={{ duration, ease: "linear", repeat: Infinity }}
+        style={{ animationPlayState: paused ? "paused" : "running" }}
+      >
+        {loop.map((t, i) => (
+          <ToolCard key={`${t.name}-${i}`} t={t} />
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
 function Tools() {
   return (
@@ -671,34 +726,20 @@ function Tools() {
           intro="A pragmatic stack — chosen for craft, speed, and the teams we hand off to."
         />
 
-        <div className="grid gap-x-16 gap-y-16 md:grid-cols-2 md:gap-y-20">
+        <div className="space-y-14">
           {TOOL_GROUPS.map((g, gi) => (
             <motion.div
               key={g.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, ease: EASE, delay: (gi % 2) * 0.08 }}
+              transition={{ duration: 0.7, ease: EASE }}
             >
-              <div className="mb-6 flex items-baseline justify-between border-b border-hairline pb-4">
+              <div className="mx-auto mb-5 flex max-w-[1400px] items-baseline justify-between px-1">
                 <h3 className="text-[13px] uppercase tracking-[0.22em] text-subtle">{g.title}</h3>
                 <span className="font-mono text-[13px] text-subtle">{String(gi + 1).padStart(2, "0")}</span>
               </div>
-              <ul className="space-y-4">
-                {g.tools.map((t, ti) => (
-                  <motion.li
-                    key={t.name}
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 0.5, ease: EASE, delay: ti * 0.05 }}
-                    className="flex items-center gap-4 text-[18px] text-ink"
-                  >
-                    {t.icon}
-                    <span>{t.name}</span>
-                  </motion.li>
-                ))}
-              </ul>
+              <ToolMarquee tools={g.tools} reverse={gi % 2 === 1} />
             </motion.div>
           ))}
         </div>
@@ -706,6 +747,7 @@ function Tools() {
     </section>
   );
 }
+
 
 /* -------------------------------------------------------------------------- */
 /*                                    FAQ                                     */
@@ -719,7 +761,7 @@ const FAQS = [
 ] as const;
 
 function FAQ() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <section id="faq" className="border-t border-hairline bg-white py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
