@@ -568,11 +568,11 @@ function Process() {
         />
 
         <div ref={ref} className="relative mx-auto mt-8 max-w-2xl">
-          {/* animated vertical line */}
-          <div className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-hairline" />
+          {/* track line */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[2px] -translate-x-1/2 bg-hairline" />
           <motion.div
             style={{ scaleY: lineScale, transformOrigin: "top" }}
-            className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-brand"
+            className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[2px] -translate-x-1/2 bg-brand"
           />
           {STEPS.map((s, i) => (
             <motion.div
@@ -581,9 +581,9 @@ function Process() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7, ease: EASE, delay: i * 0.06 }}
-              className="group relative py-6 text-center"
+              className="group relative z-10 py-4 text-center"
             >
-              <div className="relative z-10 mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand transition-transform duration-500 group-hover:scale-110">
+              <div className="relative mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand shadow-sm">
                 {s.symbol}
               </div>
               <h3 className="text-[26px] font-medium tracking-[-0.02em] text-ink md:text-[30px]">
