@@ -535,7 +535,7 @@ function Work() {
           title="Recent projects."
           intro="A few of the teams we've partnered with — from early-stage brands to funded startups shipping to real users."
         />
-        <div className="grid gap-20 md:gap-24">
+        <div className="grid gap-8 md:grid-cols-2 md:gap-10">
           {PROJECTS.map((p, i) => <ProjectCard key={p.title} p={p} i={i} />)}
         </div>
       </div>
