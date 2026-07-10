@@ -319,35 +319,32 @@ function Hero() {
 /* -------------------------------------------------------------------------- */
 function SectionHeader({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
   return (
-    <div className="mb-20 grid gap-10 md:grid-cols-12 md:gap-16">
-      <div className="md:col-span-4">
-        <div className="flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-subtle">
-          <span className="h-px w-6 bg-hairline" />
-          {eyebrow}
-        </div>
+    <div className="mx-auto mb-20 flex max-w-3xl flex-col items-center text-center">
+      <div className="flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-subtle">
+        <span className="h-px w-6 bg-hairline" />
+        {eyebrow}
+        <span className="h-px w-6 bg-hairline" />
       </div>
-      <div className="md:col-span-8">
-        <motion.h2
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.9, ease: EASE }}
+        className="mt-6 text-[40px] font-medium leading-[1.05] tracking-[-0.025em] text-ink sm:text-[48px] md:text-[56px]"
+      >
+        {title}
+      </motion.h2>
+      {intro && (
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.9, ease: EASE }}
-          className="text-[40px] font-medium leading-[1.05] tracking-[-0.025em] text-ink sm:text-[48px] md:text-[56px]"
+          transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}
+          className="mt-6 max-w-2xl text-[19px] leading-[1.55] text-subtle"
         >
-          {title}
-        </motion.h2>
-        {intro && (
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}
-            className="mt-8 max-w-2xl text-[19px] leading-[1.55] text-subtle"
-          >
-            {intro}
-          </motion.p>
-        )}
-      </div>
+          {intro}
+        </motion.p>
+      )}
     </div>
   );
 }
