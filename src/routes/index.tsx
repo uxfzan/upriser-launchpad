@@ -493,8 +493,13 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
       transition={{ duration: 1, ease: EASE, delay: i * 0.05 }}
       className="group"
     >
-      <a href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} className="block">
-        <div className="relative mb-8 overflow-hidden rounded-xl bg-[#f5f5f5]" style={{ aspectRatio: "16/10" }}>
+      <a
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="block overflow-hidden rounded-2xl border border-hairline bg-white p-4 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(16,54,125,0.25)] md:p-5"
+      >
+        <div className="relative overflow-hidden rounded-xl bg-[#f5f5f5]" style={{ aspectRatio: "16/9" }}>
           <motion.img
             src={p.img}
             alt={p.title}
@@ -502,17 +507,17 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
             className="absolute inset-0 h-[112%] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
           />
         </div>
-        <div className="flex items-baseline justify-between gap-8">
+        <div className="flex items-baseline justify-between gap-8 px-2 pb-2 pt-6">
           <div>
-            <div className="flex items-center gap-4 text-[13px] uppercase tracking-[0.18em] text-subtle">
+            <div className="flex items-center gap-4 text-[12px] uppercase tracking-[0.18em] text-subtle">
               <span>{p.tag}</span>
               <span className="h-px w-4 bg-hairline" />
               <span>{p.year}</span>
             </div>
-            <h3 className="mt-3 text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+            <h3 className="mt-3 text-[24px] font-medium tracking-[-0.02em] text-ink md:text-[26px]">
               {p.title}
             </h3>
-            <p className="mt-1 text-[16px] text-subtle">{p.meta}</p>
+            <p className="mt-1 text-[15px] text-subtle">{p.meta}</p>
           </div>
           <ArrowUpRight className="h-5 w-5 shrink-0 text-subtle transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
         </div>
