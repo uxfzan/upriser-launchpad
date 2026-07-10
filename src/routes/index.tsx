@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
