@@ -641,11 +641,7 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
 
 function ToolCard({ t }: { t: Tool }) {
   return (
-    <motion.div
-      whileHover={{ y: -6, rotate: -2, scale: 1.05 }}
-      transition={{ type: "spring", stiffness: 320, damping: 18 }}
-      className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-colors hover:border-brand/30 hover:shadow-[0_20px_40px_-20px_rgba(16,54,125,0.35)]"
-    >
+    <div className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.04] hover:shadow-[0_12px_30px_-20px_rgba(16,54,125,0.18)]">
       <img
         src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
         alt={t.name}
@@ -655,7 +651,7 @@ function ToolCard({ t }: { t: Tool }) {
       <span className="text-[13px] font-medium text-ink/80 transition-colors group-hover:text-ink">
         {t.name}
       </span>
-    </motion.div>
+    </div>
   );
 }
 
