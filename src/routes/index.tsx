@@ -386,7 +386,7 @@ const SERVICES = [
 ] as const;
 
 function Services() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
     <section id="services" className="border-t border-hairline bg-white py-28 md:py-32">
