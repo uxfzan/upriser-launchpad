@@ -716,7 +716,7 @@ const FAQS = [
 ] as const;
 
 function FAQ() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <section id="faq" className="border-t border-hairline bg-white py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
