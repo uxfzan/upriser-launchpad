@@ -554,6 +554,10 @@ const STEPS = [
 ] as const;
 
 function Process() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 60%"] });
+  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
     <section id="process" className="border-t border-hairline bg-white py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
@@ -563,28 +567,31 @@ function Process() {
           intro="Four phases that keep the work moving without the noise."
         />
 
-        <div className="mx-auto mt-8 max-w-2xl">
+        <div ref={ref} className="relative mx-auto mt-8 max-w-2xl">
+          {/* animated vertical line */}
+          <div className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-hairline" />
+          <motion.div
+            style={{ scaleY: lineScale, transformOrigin: "top" }}
+            className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-brand"
+          />
           {STEPS.map((s, i) => (
             <motion.div
               key={s.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, ease: EASE, delay: i * 0.08 }}
-              className="group relative py-10 text-center"
+              transition={{ duration: 0.7, ease: EASE, delay: i * 0.06 }}
+              className="group relative py-6 text-center"
             >
-              <div className="mb-5 text-[22px] text-brand transition-transform duration-500 group-hover:scale-110">
+              <div className="relative z-10 mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand transition-transform duration-500 group-hover:scale-110">
                 {s.symbol}
               </div>
-              <h3 className="text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]">
+              <h3 className="text-[26px] font-medium tracking-[-0.02em] text-ink md:text-[30px]">
                 {s.title}
               </h3>
-              <p className="mx-auto mt-4 max-w-md text-[17px] leading-[1.6] text-subtle">
+              <p className="mx-auto mt-2 max-w-md text-[16px] leading-[1.6] text-subtle">
                 {s.body}
               </p>
-              {i < STEPS.length - 1 && (
-                <div className="mx-auto mt-10 h-16 w-px bg-hairline" />
-              )}
             </motion.div>
           ))}
         </div>
