@@ -568,11 +568,11 @@ function Process() {
         />
 
         <div ref={ref} className="relative mx-auto mt-8 max-w-2xl">
-          {/* animated vertical line */}
-          <div className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-hairline" />
+          {/* track line */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[2px] -translate-x-1/2 bg-hairline" />
           <motion.div
             style={{ scaleY: lineScale, transformOrigin: "top" }}
-            className="pointer-events-none absolute left-1/2 top-0 -ml-[1px] h-full w-[2px] bg-brand"
+            className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[2px] -translate-x-1/2 bg-brand"
           />
           {STEPS.map((s, i) => (
             <motion.div
@@ -581,9 +581,9 @@ function Process() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7, ease: EASE, delay: i * 0.06 }}
-              className="group relative py-6 text-center"
+              className="group relative z-10 py-4 text-center"
             >
-              <div className="relative z-10 mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand transition-transform duration-500 group-hover:scale-110">
+              <div className="relative mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand shadow-sm">
                 {s.symbol}
               </div>
               <h3 className="text-[26px] font-medium tracking-[-0.02em] text-ink md:text-[30px]">
@@ -628,17 +628,6 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
     ],
   },
   {
-    title: "AI",
-    tools: [
-      { name: "Claude", slug: "anthropic", color: "D97757" },
-      { name: "OpenAI", slug: "openai", color: "10A37F" },
-      { name: "Cursor", slug: "cursor", color: "111111" },
-      { name: "Midjourney", slug: "midjourney", color: "111111" },
-      { name: "Perplexity", slug: "perplexity", color: "1FB8CD" },
-      { name: "Runway", slug: "runway", color: "111111" },
-    ],
-  },
-  {
     title: "Automation",
     tools: [
       { name: "Zapier", slug: "zapier", color: "FF4A00" },
@@ -648,36 +637,11 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
       { name: "Retool", slug: "retool", color: "3D3D3D" },
     ],
   },
-  {
-    title: "Project Management",
-    tools: [
-      { name: "Linear", slug: "linear", color: "5E6AD2" },
-      { name: "Notion", slug: "notion", color: "111111" },
-      { name: "Slack", slug: "slack", color: "611F69" },
-      { name: "Loom", slug: "loom", color: "625DF5" },
-      { name: "Figjam", slug: "figma", color: "F24E1E" },
-      { name: "GitHub", slug: "github", color: "111111" },
-    ],
-  },
-  {
-    title: "Research",
-    tools: [
-      { name: "Maze", slug: "maze", color: "111111" },
-      { name: "Dovetail", slug: "dovetail", color: "5D5FEF" },
-      { name: "Typeform", slug: "typeform", color: "111111" },
-      { name: "Hotjar", slug: "hotjar", color: "FD3A5C" },
-      { name: "Miro", slug: "miro", color: "FFD02F" },
-    ],
-  },
 ];
 
 function ToolCard({ t }: { t: Tool }) {
   return (
-    <motion.div
-      whileHover={{ y: -6, rotate: -2, scale: 1.05 }}
-      transition={{ type: "spring", stiffness: 320, damping: 18 }}
-      className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-colors hover:border-brand/30 hover:shadow-[0_20px_40px_-20px_rgba(16,54,125,0.35)]"
-    >
+    <div className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.04] hover:shadow-[0_12px_30px_-20px_rgba(16,54,125,0.18)]">
       <img
         src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
         alt={t.name}
@@ -687,7 +651,7 @@ function ToolCard({ t }: { t: Tool }) {
       <span className="text-[13px] font-medium text-ink/80 transition-colors group-hover:text-ink">
         {t.name}
       </span>
-    </motion.div>
+    </div>
   );
 }
 
