@@ -603,72 +603,118 @@ function Process() {
 /* -------------------------------------------------------------------------- */
 /*                                   TOOLS                                    */
 /* -------------------------------------------------------------------------- */
-const TOOL_GROUPS: Array<{ title: string; tools: Array<{ name: string; icon: ReactNode }> }> = [
+type Tool = { name: string; slug: string; color: string };
+const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
   {
     title: "Design",
     tools: [
-      { name: "Figma", icon: <FigmaIcon /> },
-      { name: "Framer", icon: <FramerIcon /> },
-      { name: "Photoshop", icon: <DotIcon color="#31A8FF" /> },
-      { name: "Illustrator", icon: <DotIcon color="#FF9A00" /> },
+      { name: "Figma", slug: "figma", color: "F24E1E" },
+      { name: "Framer", slug: "framer", color: "0055FF" },
+      { name: "Photoshop", slug: "adobephotoshop", color: "31A8FF" },
+      { name: "Illustrator", slug: "adobeillustrator", color: "FF9A00" },
+      { name: "Sketch", slug: "sketch", color: "F7B500" },
+      { name: "After Effects", slug: "adobeaftereffects", color: "9999FF" },
     ],
   },
   {
     title: "Build",
     tools: [
-      { name: "React", icon: <ReactIcon /> },
-      { name: "Next.js", icon: <NextIcon /> },
-      { name: "Webflow", icon: <WebflowIcon /> },
-      { name: "Tailwind", icon: <TailwindIcon /> },
+      { name: "React", slug: "react", color: "61DAFB" },
+      { name: "Next.js", slug: "nextdotjs", color: "111111" },
+      { name: "Webflow", slug: "webflow", color: "146EF5" },
+      { name: "Tailwind", slug: "tailwindcss", color: "06B6D4" },
+      { name: "TypeScript", slug: "typescript", color: "3178C6" },
+      { name: "Node.js", slug: "nodedotjs", color: "5FA04E" },
     ],
   },
   {
     title: "AI",
     tools: [
-      { name: "Claude", icon: <DotIcon color="#D97757" /> },
-      { name: "GPT", icon: <DotIcon color="#10a37f" /> },
-      { name: "Cursor", icon: <DotIcon color="#111111" /> },
-      { name: "Midjourney", icon: <DotIcon color="#111111" /> },
+      { name: "Claude", slug: "anthropic", color: "D97757" },
+      { name: "OpenAI", slug: "openai", color: "10A37F" },
+      { name: "Cursor", slug: "cursor", color: "111111" },
+      { name: "Midjourney", slug: "midjourney", color: "111111" },
+      { name: "Perplexity", slug: "perplexity", color: "1FB8CD" },
+      { name: "Runway", slug: "runway", color: "111111" },
     ],
   },
   {
     title: "Automation",
     tools: [
-      { name: "Zapier", icon: <DotIcon color="#FF4A00" /> },
-      { name: "Make", icon: <DotIcon color="#6D00CC" /> },
-      { name: "n8n", icon: <DotIcon color="#EA4B71" /> },
-      { name: "Airtable", icon: <DotIcon color="#FCB400" /> },
+      { name: "Zapier", slug: "zapier", color: "FF4A00" },
+      { name: "Make", slug: "make", color: "6D00CC" },
+      { name: "n8n", slug: "n8n", color: "EA4B71" },
+      { name: "Airtable", slug: "airtable", color: "FCB400" },
+      { name: "Retool", slug: "retool", color: "3D3D3D" },
     ],
   },
   {
     title: "Project Management",
     tools: [
-      { name: "Linear", icon: <DotIcon color="#5E6AD2" /> },
-      { name: "Notion", icon: <DotIcon color="#111111" /> },
-      { name: "Slack", icon: <DotIcon color="#611F69" /> },
-      { name: "Loom", icon: <DotIcon color="#625DF5" /> },
+      { name: "Linear", slug: "linear", color: "5E6AD2" },
+      { name: "Notion", slug: "notion", color: "111111" },
+      { name: "Slack", slug: "slack", color: "611F69" },
+      { name: "Loom", slug: "loom", color: "625DF5" },
+      { name: "Figjam", slug: "figma", color: "F24E1E" },
+      { name: "GitHub", slug: "github", color: "111111" },
     ],
   },
   {
     title: "Research",
     tools: [
-      { name: "Maze", icon: <DotIcon color="#111111" /> },
-      { name: "Dovetail", icon: <DotIcon color="#5D5FEF" /> },
-      { name: "Typeform", icon: <DotIcon color="#111111" /> },
-      { name: "Hotjar", icon: <DotIcon color="#FD3A5C" /> },
+      { name: "Maze", slug: "maze", color: "111111" },
+      { name: "Dovetail", slug: "dovetail", color: "5D5FEF" },
+      { name: "Typeform", slug: "typeform", color: "111111" },
+      { name: "Hotjar", slug: "hotjar", color: "FD3A5C" },
+      { name: "Miro", slug: "miro", color: "FFD02F" },
     ],
   },
 ];
 
-function DotIcon({ color }: { color: string }) {
-  return <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: color }} />;
+function ToolCard({ t }: { t: Tool }) {
+  return (
+    <motion.div
+      whileHover={{ y: -6, rotate: -2, scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 320, damping: 18 }}
+      className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-colors hover:border-brand/30 hover:shadow-[0_20px_40px_-20px_rgba(16,54,125,0.35)]"
+    >
+      <img
+        src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
+        alt={t.name}
+        className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+        loading="lazy"
+      />
+      <span className="text-[13px] font-medium text-ink/80 transition-colors group-hover:text-ink">
+        {t.name}
+      </span>
+    </motion.div>
+  );
 }
-function FigmaIcon() { return <DotIcon color="#F24E1E" />; }
-function FramerIcon() { return <DotIcon color="#0055FF" />; }
-function ReactIcon() { return <DotIcon color="#61DAFB" />; }
-function NextIcon() { return <DotIcon color="#111111" />; }
-function WebflowIcon() { return <DotIcon color="#146EF5" />; }
-function TailwindIcon() { return <DotIcon color="#06B6D4" />; }
+
+function ToolMarquee({ tools, reverse = false }: { tools: Tool[]; reverse?: boolean }) {
+  const [paused, setPaused] = useState(false);
+  const loop = useMemo(() => [...tools, ...tools, ...tools], [tools]);
+  const duration = Math.max(18, tools.length * 4);
+
+  return (
+    <div
+      className="group/marquee relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <motion.div
+        className="flex w-max py-2"
+        animate={{ x: reverse ? ["-33.333%", "0%"] : ["0%", "-33.333%"] }}
+        transition={{ duration, ease: "linear", repeat: Infinity }}
+        style={{ animationPlayState: paused ? "paused" : "running" }}
+      >
+        {loop.map((t, i) => (
+          <ToolCard key={`${t.name}-${i}`} t={t} />
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
 function Tools() {
   return (
@@ -680,34 +726,20 @@ function Tools() {
           intro="A pragmatic stack — chosen for craft, speed, and the teams we hand off to."
         />
 
-        <div className="grid gap-x-16 gap-y-16 md:grid-cols-2 md:gap-y-20">
+        <div className="space-y-14">
           {TOOL_GROUPS.map((g, gi) => (
             <motion.div
               key={g.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, ease: EASE, delay: (gi % 2) * 0.08 }}
+              transition={{ duration: 0.7, ease: EASE }}
             >
-              <div className="mb-6 flex items-baseline justify-between border-b border-hairline pb-4">
+              <div className="mx-auto mb-5 flex max-w-[1400px] items-baseline justify-between px-1">
                 <h3 className="text-[13px] uppercase tracking-[0.22em] text-subtle">{g.title}</h3>
                 <span className="font-mono text-[13px] text-subtle">{String(gi + 1).padStart(2, "0")}</span>
               </div>
-              <ul className="space-y-4">
-                {g.tools.map((t, ti) => (
-                  <motion.li
-                    key={t.name}
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 0.5, ease: EASE, delay: ti * 0.05 }}
-                    className="flex items-center gap-4 text-[18px] text-ink"
-                  >
-                    {t.icon}
-                    <span>{t.name}</span>
-                  </motion.li>
-                ))}
-              </ul>
+              <ToolMarquee tools={g.tools} reverse={gi % 2 === 1} />
             </motion.div>
           ))}
         </div>
@@ -715,6 +747,7 @@ function Tools() {
     </section>
   );
 }
+
 
 /* -------------------------------------------------------------------------- */
 /*                                    FAQ                                     */
