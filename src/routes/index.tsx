@@ -628,17 +628,6 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
     ],
   },
   {
-    title: "AI",
-    tools: [
-      { name: "Claude", slug: "anthropic", color: "D97757" },
-      { name: "OpenAI", slug: "openai", color: "10A37F" },
-      { name: "Cursor", slug: "cursor", color: "111111" },
-      { name: "Midjourney", slug: "midjourney", color: "111111" },
-      { name: "Perplexity", slug: "perplexity", color: "1FB8CD" },
-      { name: "Runway", slug: "runway", color: "111111" },
-    ],
-  },
-  {
     title: "Automation",
     tools: [
       { name: "Zapier", slug: "zapier", color: "FF4A00" },
@@ -646,27 +635,6 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
       { name: "n8n", slug: "n8n", color: "EA4B71" },
       { name: "Airtable", slug: "airtable", color: "FCB400" },
       { name: "Retool", slug: "retool", color: "3D3D3D" },
-    ],
-  },
-  {
-    title: "Project Management",
-    tools: [
-      { name: "Linear", slug: "linear", color: "5E6AD2" },
-      { name: "Notion", slug: "notion", color: "111111" },
-      { name: "Slack", slug: "slack", color: "611F69" },
-      { name: "Loom", slug: "loom", color: "625DF5" },
-      { name: "Figjam", slug: "figma", color: "F24E1E" },
-      { name: "GitHub", slug: "github", color: "111111" },
-    ],
-  },
-  {
-    title: "Research",
-    tools: [
-      { name: "Maze", slug: "maze", color: "111111" },
-      { name: "Dovetail", slug: "dovetail", color: "5D5FEF" },
-      { name: "Typeform", slug: "typeform", color: "111111" },
-      { name: "Hotjar", slug: "hotjar", color: "FD3A5C" },
-      { name: "Miro", slug: "miro", color: "FFD02F" },
     ],
   },
 ];
