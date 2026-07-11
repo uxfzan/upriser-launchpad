@@ -389,7 +389,7 @@ function Services() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="services" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="services" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="Services"
@@ -528,7 +528,7 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
 
 function Work() {
   return (
-    <section id="work" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="work" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="Selected Work"
@@ -636,7 +636,7 @@ function Process() {
   const progress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="process" ref={sectionRef} className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="process" ref={sectionRef} className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="How We Work"
@@ -833,7 +833,7 @@ function ToolMarquee({ tools, reverse = false }: { tools: Tool[]; reverse?: bool
 
 function Tools() {
   return (
-    <section id="tools" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="tools" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="Toolkit"
@@ -878,7 +878,7 @@ const FAQS = [
 function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section id="faq" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="faq" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader eyebrow="FAQ" title="Common questions." />
         <div className="border-t border-hairline">
