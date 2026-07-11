@@ -389,7 +389,7 @@ function Services() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="services" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="services" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="Services"
@@ -528,7 +528,7 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
 
 function Work() {
   return (
-    <section id="work" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="work" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="Selected Work"
@@ -636,7 +636,7 @@ function Process() {
   const progress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="process" ref={sectionRef} className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="process" ref={sectionRef} className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="How We Work"
@@ -718,17 +718,20 @@ function Process() {
 /* -------------------------------------------------------------------------- */
 /*                                   TOOLS                                    */
 /* -------------------------------------------------------------------------- */
-type Tool = { name: string; slug: string; color: string };
+type Tool = { name: string; slug: string; color: string; logo?: string };
+// Adobe brand marks were removed from Simple Icons for trademark reasons;
+// we source them from svgl.app which hosts official-style SVGs.
+const SVGL = (n: string) => `https://svgl.app/library/${n}.svg`;
 const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
   {
     title: "Design",
     tools: [
       { name: "Figma", slug: "figma", color: "F24E1E" },
       { name: "Framer", slug: "framer", color: "0055FF" },
-      { name: "Photoshop", slug: "adobephotoshop", color: "31A8FF" },
-      { name: "Illustrator", slug: "adobeillustrator", color: "FF9A00" },
+      { name: "Photoshop", slug: "photoshop", color: "31A8FF", logo: SVGL("photoshop") },
+      { name: "Illustrator", slug: "illustrator", color: "FF9A00", logo: SVGL("illustrator") },
       { name: "Sketch", slug: "sketch", color: "F7B500" },
-      { name: "After Effects", slug: "adobeaftereffects", color: "9999FF" },
+      { name: "After Effects", slug: "after-effects", color: "9999FF", logo: SVGL("after-effects") },
     ],
   },
   {
@@ -754,15 +757,48 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
   },
 ];
 
+function ToolLogo({ t }: { t: Tool }) {
+  const primary = t.logo ?? `https://cdn.simpleicons.org/${t.slug}/${t.color}`;
+  const [src, setSrc] = useState(primary);
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div
+        className="flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-semibold text-white"
+        style={{ backgroundColor: `#${t.color}` }}
+        aria-label={t.name}
+      >
+        {t.name
+          .split(/\s+/)
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={t.name}
+      className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+      loading="lazy"
+      onError={() => {
+        // Fallback chain: svgl → simpleicons → initials
+        if (t.logo && src === t.logo) {
+          setSrc(`https://cdn.simpleicons.org/${t.slug}/${t.color}`);
+        } else {
+          setFailed(true);
+        }
+      }}
+    />
+  );
+}
+
 function ToolCard({ t }: { t: Tool }) {
   return (
-    <div className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.04] hover:shadow-[0_12px_30px_-20px_rgba(16,54,125,0.18)]">
-      <img
-        src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
-        alt={t.name}
-        className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
-        loading="lazy"
-      />
+    <div className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white/70 px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] backdrop-blur-sm transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.04] hover:shadow-[0_12px_30px_-20px_rgba(16,54,125,0.18)]">
+      <ToolLogo t={t} />
       <span className="text-[13px] font-medium text-ink/80 transition-colors group-hover:text-ink">
         {t.name}
       </span>
@@ -797,7 +833,7 @@ function ToolMarquee({ tools, reverse = false }: { tools: Tool[]; reverse?: bool
 
 function Tools() {
   return (
-    <section id="tools" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="tools" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="Toolkit"
@@ -842,7 +878,7 @@ const FAQS = [
 function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section id="faq" className="border-t border-hairline bg-white py-28 md:py-32">
+    <section id="faq" className="border-t border-hairline bg-transparent py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader eyebrow="FAQ" title="Common questions." />
         <div className="border-t border-hairline">
@@ -969,7 +1005,23 @@ function Contact() {
 /* -------------------------------------------------------------------------- */
 function Landing() {
   return (
-    <main className="bg-white text-ink">
+    <main className="relative overflow-hidden bg-background text-ink">
+      {/* Ambient background — felt more than seen */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-40 left-1/2 h-[720px] w-[1200px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(16,54,125,0.06),transparent_70%)] blur-2xl" />
+        <div className="absolute top-[45%] -left-40 h-[560px] w-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(16,54,125,0.05),transparent_70%)] blur-3xl" />
+        <div className="absolute top-[75%] -right-40 h-[620px] w-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(255,154,0,0.04),transparent_70%)] blur-3xl" />
+        <div
+          className="absolute inset-0 opacity-[0.35] mix-blend-multiply"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(17,17,17,0.045) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+            maskImage:
+              "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
+          }}
+        />
+      </div>
       <Nav />
       <Hero />
       <Services />
