@@ -547,19 +547,96 @@ function Work() {
 /*                                  PROCESS                                   */
 /* -------------------------------------------------------------------------- */
 const STEPS = [
-  { title: "Discover", body: "We start by listening — understanding your business, users, and the outcomes that actually matter.", symbol: "◐" },
-  { title: "Define", body: "We turn research into direction: sharp strategy, clear scope, and a shared point of view.", symbol: "◑" },
-  { title: "Design & Build", body: "We move in tight loops between design and code, shipping the work in visible increments.", symbol: "◕" },
-  { title: "Launch", body: "We ship confidently, then stay close — iterating on real feedback once it's in the world.", symbol: "●" },
+  {
+    title: "Discover",
+    body: "We start by listening — understanding your business, users, and the outcomes that actually matter.",
+    detail: "Stakeholder conversations, product audits, and market context so we start with a shared picture of reality.",
+  },
+  {
+    title: "Define",
+    body: "We turn research into direction: sharp strategy, clear scope, and a shared point of view.",
+    detail: "Positioning, priorities, and a written brief that keeps design and engineering aligned from day one.",
+  },
+  {
+    title: "Design & Build",
+    body: "We move in tight loops between design and code, shipping the work in visible increments.",
+    detail: "Weekly reviews, working prototypes, and production-ready code — never a slide deck standing in for the product.",
+  },
+  {
+    title: "Launch & Grow",
+    body: "We ship confidently, then stay close — iterating on real feedback once it's in the world.",
+    detail: "Launch support, analytics, and follow-on iterations informed by how people actually use what we built.",
+  },
 ] as const;
 
-function Process() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 60%"] });
-  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+function ProcessCard({
+  step,
+  index,
+  onActive,
+}: {
+  step: (typeof STEPS)[number];
+  index: number;
+  onActive: (i: number) => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start 80%", "end 40%"],
+  });
+  const inViewOpacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.55, 1, 1, 0.55]);
+
+  useEffect(() => {
+    return scrollYProgress.on("change", (v) => {
+      if (v > 0.15 && v < 0.9) onActive(index);
+    });
+  }, [scrollYProgress, index, onActive]);
 
   return (
-    <section id="process" className="border-t border-hairline bg-white py-28 md:py-32">
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 40, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-120px" }}
+      transition={{ duration: 0.6, ease: EASE }}
+      style={{ opacity: inViewOpacity }}
+      className="group relative overflow-hidden rounded-2xl border border-hairline bg-white p-8 shadow-sm transition-colors duration-500 hover:border-ink/20 md:p-10"
+    >
+      {/* ambient accent */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-brand/5 opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"
+      />
+      <div className="relative flex items-start justify-between gap-6">
+        <div className="max-w-xl">
+          <div className="mb-6 flex items-center gap-3 text-[12px] uppercase tracking-[0.18em] text-subtle">
+            <span>Phase {String(index + 1).padStart(2, "0")}</span>
+            <span className="h-px w-8 bg-hairline" />
+          </div>
+          <h3 className="text-[28px] font-medium leading-[1.1] tracking-[-0.02em] text-ink md:text-[36px]">
+            {step.title}
+          </h3>
+          <p className="mt-4 text-[17px] leading-[1.6] text-ink/75 md:text-[18px]">{step.body}</p>
+          <p className="mt-4 text-[15px] leading-[1.6] text-subtle">{step.detail}</p>
+        </div>
+        <div className="hidden shrink-0 font-display text-[64px] font-medium leading-none tracking-[-0.04em] text-hairline transition-colors duration-500 group-hover:text-brand/40 md:block">
+          {String(index + 1).padStart(2, "0")}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Process() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 60%", "end 40%"],
+  });
+  const [active, setActive] = useState(0);
+  const progress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  return (
+    <section id="process" ref={sectionRef} className="border-t border-hairline bg-white py-28 md:py-32">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <SectionHeader
           eyebrow="How We Work"
@@ -567,33 +644,71 @@ function Process() {
           intro="Four phases that keep the work moving without the noise."
         />
 
-        <div ref={ref} className="relative mx-auto mt-8 max-w-2xl">
-          {/* track line */}
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[2px] -translate-x-1/2 bg-hairline" />
-          <motion.div
-            style={{ scaleY: lineScale, transformOrigin: "top" }}
-            className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[2px] -translate-x-1/2 bg-brand"
-          />
-          {STEPS.map((s, i) => (
-            <motion.div
-              key={s.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.7, ease: EASE, delay: i * 0.06 }}
-              className="group relative z-10 py-4 text-center"
-            >
-              <div className="relative mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-[18px] text-brand shadow-sm">
-                {s.symbol}
+        <div className="mt-16 grid gap-10 md:mt-20 md:grid-cols-12 md:gap-12">
+          {/* sticky left panel */}
+          <aside className="md:col-span-5 lg:col-span-4">
+            <div className="md:sticky md:top-28">
+              <div className="text-[12px] uppercase tracking-[0.18em] text-subtle">Process</div>
+              <div className="mt-6 flex items-baseline gap-4">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={active}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                    className="font-display text-[72px] font-medium leading-none tracking-[-0.04em] text-ink md:text-[96px]"
+                  >
+                    {String(active + 1).padStart(2, "0")}
+                  </motion.span>
+                </AnimatePresence>
+                <span className="text-[14px] text-subtle">/ {String(STEPS.length).padStart(2, "0")}</span>
               </div>
-              <h3 className="text-[26px] font-medium tracking-[-0.02em] text-ink md:text-[30px]">
-                {s.title}
-              </h3>
-              <p className="mx-auto mt-2 max-w-md text-[16px] leading-[1.6] text-subtle">
-                {s.body}
-              </p>
-            </motion.div>
-          ))}
+              <AnimatePresence mode="wait">
+                <motion.h3
+                  key={STEPS[active].title}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                  className="mt-4 text-[28px] font-medium tracking-[-0.02em] text-ink md:text-[32px]"
+                >
+                  {STEPS[active].title}
+                </motion.h3>
+              </AnimatePresence>
+
+              {/* progress rail */}
+              <div className="mt-8 h-[2px] w-full max-w-[240px] overflow-hidden rounded-full bg-hairline">
+                <motion.div style={{ width: progress }} className="h-full bg-brand" />
+              </div>
+
+              {/* step ticks */}
+              <ul className="mt-6 space-y-2">
+                {STEPS.map((s, i) => (
+                  <li
+                    key={s.title}
+                    className={`flex items-center gap-3 text-[13px] transition-colors duration-300 ${
+                      i === active ? "text-ink" : "text-subtle/70"
+                    }`}
+                  >
+                    <span
+                      className={`h-[6px] w-[6px] rounded-full transition-colors duration-300 ${
+                        i <= active ? "bg-brand" : "bg-hairline"
+                      }`}
+                    />
+                    {s.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+
+          {/* right cards */}
+          <div className="flex flex-col gap-6 md:col-span-7 md:gap-8 lg:col-span-8">
+            {STEPS.map((s, i) => (
+              <ProcessCard key={s.title} step={s} index={i} onActive={setActive} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
