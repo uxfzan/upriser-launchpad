@@ -757,15 +757,48 @@ const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
   },
 ];
 
+function ToolLogo({ t }: { t: Tool }) {
+  const primary = t.logo ?? `https://cdn.simpleicons.org/${t.slug}/${t.color}`;
+  const [src, setSrc] = useState(primary);
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div
+        className="flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-semibold text-white"
+        style={{ backgroundColor: `#${t.color}` }}
+        aria-label={t.name}
+      >
+        {t.name
+          .split(/\s+/)
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={t.name}
+      className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+      loading="lazy"
+      onError={() => {
+        // Fallback chain: svgl → simpleicons → initials
+        if (t.logo && src === t.logo) {
+          setSrc(`https://cdn.simpleicons.org/${t.slug}/${t.color}`);
+        } else {
+          setFailed(true);
+        }
+      }}
+    />
+  );
+}
+
 function ToolCard({ t }: { t: Tool }) {
   return (
-    <div className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.04] hover:shadow-[0_12px_30px_-20px_rgba(16,54,125,0.18)]">
-      <img
-        src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
-        alt={t.name}
-        className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
-        loading="lazy"
-      />
+    <div className="group mx-3 flex h-24 w-40 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-hairline bg-white/70 px-4 shadow-[0_1px_0_rgba(0,0,0,0.02)] backdrop-blur-sm transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.04] hover:shadow-[0_12px_30px_-20px_rgba(16,54,125,0.18)]">
+      <ToolLogo t={t} />
       <span className="text-[13px] font-medium text-ink/80 transition-colors group-hover:text-ink">
         {t.name}
       </span>
