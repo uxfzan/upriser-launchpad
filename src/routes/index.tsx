@@ -1005,7 +1005,23 @@ function Contact() {
 /* -------------------------------------------------------------------------- */
 function Landing() {
   return (
-    <main className="bg-white text-ink">
+    <main className="relative overflow-hidden bg-background text-ink">
+      {/* Ambient background — felt more than seen */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-40 left-1/2 h-[720px] w-[1200px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(16,54,125,0.06),transparent_70%)] blur-2xl" />
+        <div className="absolute top-[45%] -left-40 h-[560px] w-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(16,54,125,0.05),transparent_70%)] blur-3xl" />
+        <div className="absolute top-[75%] -right-40 h-[620px] w-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(255,154,0,0.04),transparent_70%)] blur-3xl" />
+        <div
+          className="absolute inset-0 opacity-[0.35] mix-blend-multiply"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(17,17,17,0.045) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+            maskImage:
+              "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
+          }}
+        />
+      </div>
       <Nav />
       <Hero />
       <Services />
