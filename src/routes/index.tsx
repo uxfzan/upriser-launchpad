@@ -718,17 +718,20 @@ function Process() {
 /* -------------------------------------------------------------------------- */
 /*                                   TOOLS                                    */
 /* -------------------------------------------------------------------------- */
-type Tool = { name: string; slug: string; color: string };
+type Tool = { name: string; slug: string; color: string; logo?: string };
+// Adobe brand marks were removed from Simple Icons for trademark reasons;
+// we source them from svgl.app which hosts official-style SVGs.
+const SVGL = (n: string) => `https://svgl.app/library/${n}.svg`;
 const TOOL_GROUPS: Array<{ title: string; tools: Tool[] }> = [
   {
     title: "Design",
     tools: [
       { name: "Figma", slug: "figma", color: "F24E1E" },
       { name: "Framer", slug: "framer", color: "0055FF" },
-      { name: "Photoshop", slug: "adobephotoshop", color: "31A8FF" },
-      { name: "Illustrator", slug: "adobeillustrator", color: "FF9A00" },
+      { name: "Photoshop", slug: "photoshop", color: "31A8FF", logo: SVGL("photoshop") },
+      { name: "Illustrator", slug: "illustrator", color: "FF9A00", logo: SVGL("illustrator") },
       { name: "Sketch", slug: "sketch", color: "F7B500" },
-      { name: "After Effects", slug: "adobeaftereffects", color: "9999FF" },
+      { name: "After Effects", slug: "after-effects", color: "9999FF", logo: SVGL("after-effects") },
     ],
   },
   {
