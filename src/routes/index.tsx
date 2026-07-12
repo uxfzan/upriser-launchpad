@@ -911,10 +911,14 @@ function ToolLogo({ t }: { t: Tool }) {
     <img
       src={src}
       alt={t.name}
+      width={28}
+      height={28}
       className="h-7 w-7 opacity-90 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
-      loading="lazy"
+      loading="eager"
+      decoding="async"
+      // @ts-expect-error - valid HTML attribute, not yet in React types everywhere
+      fetchpriority="high"
       onError={() => {
-        // Fallback chain: svgl → simpleicons → initials
         if (t.logo && src === t.logo) {
           setSrc(`https://cdn.simpleicons.org/${t.slug}/${t.color}`);
         } else {
