@@ -1161,6 +1161,7 @@ function Landing() {
       <Services />
       <Work />
       <Process />
+      <Testimonials />
       <Tools />
       <FAQ />
       <Contact />
