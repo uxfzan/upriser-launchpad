@@ -7,6 +7,7 @@ import projectNova from "@/assets/project-nova.jpg";
 import projectPulse from "@/assets/project-pulse.jpg";
 import projectAtlas from "@/assets/project-atlas.jpg";
 import projectZoonRun from "@/assets/project-zoonrun.jpg";
+import projectSultanWarriors from "@/assets/project-sultan-warriors.jpg";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -474,6 +475,14 @@ const PROJECTS = [
     meta: "Marathon festival — Baramulla, Kashmir",
     url: "https://zoonrun.in",
   },
+  {
+    title: "Sultan Warriors",
+    tag: "Brand & Web Development",
+    year: "2026",
+    img: projectSultanWarriors,
+    meta: "Cricket team — Baramulla, Kashmir",
+    url: "https://sultanwarriors.com",
+  },
 ] as const;
 
 function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
@@ -685,14 +694,12 @@ function Process() {
                 {STEPS.map((s, i) => (
                   <li
                     key={s.title}
-                    className={`flex items-center gap-3 text-[13px] transition-colors duration-300 ${
-                      i === active ? "text-ink" : "text-subtle/70"
-                    }`}
+                    className={`flex items-center gap-3 text-[13px] transition-colors duration-300 ${i === active ? "text-ink" : "text-subtle/70"
+                      }`}
                   >
                     <span
-                      className={`h-[6px] w-[6px] rounded-full transition-colors duration-300 ${
-                        i <= active ? "bg-brand" : "bg-hairline"
-                      }`}
+                      className={`h-[6px] w-[6px] rounded-full transition-colors duration-300 ${i <= active ? "bg-brand" : "bg-hairline"
+                        }`}
                     />
                     {s.title}
                   </li>
@@ -826,9 +833,8 @@ function Testimonials() {
                   style={{ width: i === index ? 40 : 16 }}
                 >
                   <span
-                    className={`block h-full origin-left rounded-full bg-brand transition-transform duration-[6000ms] ease-linear ${
-                      i === index && !paused ? "scale-x-100" : "scale-x-0"
-                    }`}
+                    className={`block h-full origin-left rounded-full bg-brand transition-transform duration-[6000ms] ease-linear ${i === index && !paused ? "scale-x-100" : "scale-x-0"
+                      }`}
                   />
                 </button>
               ))}
