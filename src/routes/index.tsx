@@ -748,7 +748,7 @@ const TESTIMONIALS = [
   {
     quote:
       "Rare combination of taste, speed, and engineering rigour. Upriser is now the first team we call whenever something important needs to be built well.",
-    name: "Devon Park",
+    name: "Tufail Anayat",
     role: "CTO",
     company: "ZoonRun",
   },
