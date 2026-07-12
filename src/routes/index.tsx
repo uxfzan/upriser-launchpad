@@ -581,46 +581,46 @@ function ProcessCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: cardRef,
-    offset: ["start 80%", "end 40%"],
+    offset: ["start 75%", "end 35%"],
   });
-  const inViewOpacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.55, 1, 1, 0.55]);
 
   useEffect(() => {
     return scrollYProgress.on("change", (v) => {
-      if (v > 0.15 && v < 0.9) onActive(index);
+      if (v > 0.2 && v < 0.9) onActive(index);
     });
   }, [scrollYProgress, index, onActive]);
 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 40, scale: 0.98 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-120px" }}
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6, ease: EASE }}
-      style={{ opacity: inViewOpacity }}
-      className="group relative overflow-hidden rounded-2xl border border-hairline bg-white p-8 shadow-sm transition-colors duration-500 hover:border-ink/20 md:p-10"
+      className="group relative overflow-hidden rounded-[28px] border border-hairline bg-white p-8 shadow-[0_1px_0_rgba(0,0,0,0.02),0_20px_50px_-30px_rgba(16,54,125,0.15)] transition-all duration-500 hover:-translate-y-1 hover:border-brand/30 hover:shadow-[0_1px_0_rgba(0,0,0,0.02),0_30px_60px_-30px_rgba(16,54,125,0.28)] md:p-12"
     >
       {/* ambient accent */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-brand/5 opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"
+        className="pointer-events-none absolute -right-32 -top-32 h-72 w-72 rounded-full bg-brand/[0.06] opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"
       />
-      <div className="relative flex items-start justify-between gap-6">
-        <div className="max-w-xl">
-          <div className="mb-6 flex items-center gap-3 text-[12px] uppercase tracking-[0.18em] text-subtle">
-            <span>Phase {String(index + 1).padStart(2, "0")}</span>
-            <span className="h-px w-8 bg-hairline" />
-          </div>
-          <h3 className="text-[28px] font-medium leading-[1.1] tracking-[-0.02em] text-ink md:text-[36px]">
-            {step.title}
-          </h3>
-          <p className="mt-4 text-[17px] leading-[1.6] text-ink/75 md:text-[18px]">{step.body}</p>
-          <p className="mt-4 text-[15px] leading-[1.6] text-subtle">{step.detail}</p>
+      {/* corner index chip */}
+      <div className="relative mb-8 flex items-center justify-between">
+        <div className="inline-flex items-center gap-3 rounded-full border border-hairline bg-white/70 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.2em] text-subtle backdrop-blur-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+          Phase {String(index + 1).padStart(2, "0")}
         </div>
-        <div className="hidden shrink-0 font-display text-[64px] font-medium leading-none tracking-[-0.04em] text-hairline transition-colors duration-500 group-hover:text-brand/40 md:block">
+        <div className="font-display text-[44px] font-medium leading-none tracking-[-0.04em] text-hairline transition-colors duration-500 group-hover:text-brand/50 md:text-[56px]">
           {String(index + 1).padStart(2, "0")}
         </div>
+      </div>
+      <div className="relative">
+        <h3 className="text-[28px] font-medium leading-[1.1] tracking-[-0.02em] text-ink md:text-[38px]">
+          {step.title}
+        </h3>
+        <p className="mt-5 max-w-xl text-[17px] leading-[1.6] text-ink/75 md:text-[18px]">{step.body}</p>
+        <div className="mt-6 h-px w-12 bg-hairline transition-colors duration-500 group-hover:bg-brand/40" />
+        <p className="mt-6 max-w-xl text-[15px] leading-[1.65] text-subtle">{step.detail}</p>
       </div>
     </motion.div>
   );
@@ -630,7 +630,7 @@ function Process() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start 60%", "end 40%"],
+    offset: ["start 55%", "end 45%"],
   });
   const [active, setActive] = useState(0);
   const progress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
@@ -644,10 +644,10 @@ function Process() {
           intro="Four phases that keep the work moving without the noise."
         />
 
-        <div className="mt-16 grid gap-10 md:mt-20 md:grid-cols-12 md:gap-12">
-          {/* sticky left panel */}
-          <aside className="md:col-span-5 lg:col-span-4">
-            <div className="md:sticky md:top-28">
+        <div className="mt-16 grid gap-10 md:mt-20 lg:grid-cols-12 lg:gap-12">
+          {/* sticky left panel — desktop only */}
+          <aside className="hidden lg:col-span-4 lg:block">
+            <div className="sticky top-28 self-start">
               <div className="text-[12px] uppercase tracking-[0.18em] text-subtle">Process</div>
               <div className="mt-6 flex items-baseline gap-4">
                 <AnimatePresence mode="wait">
@@ -677,12 +677,10 @@ function Process() {
                 </motion.h3>
               </AnimatePresence>
 
-              {/* progress rail */}
               <div className="mt-8 h-[2px] w-full max-w-[240px] overflow-hidden rounded-full bg-hairline">
                 <motion.div style={{ width: progress }} className="h-full bg-brand" />
               </div>
 
-              {/* step ticks */}
               <ul className="mt-6 space-y-2">
                 {STEPS.map((s, i) => (
                   <li
@@ -704,10 +702,142 @@ function Process() {
           </aside>
 
           {/* right cards */}
-          <div className="flex flex-col gap-6 md:col-span-7 md:gap-8 lg:col-span-8">
+          <div className="flex flex-col gap-6 md:gap-8 lg:col-span-8">
             {STEPS.map((s, i) => (
               <ProcessCard key={s.title} step={s} index={i} onActive={setActive} />
             ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                TESTIMONIALS                                */
+/* -------------------------------------------------------------------------- */
+const TESTIMONIALS = [
+  {
+    quote:
+      "Upriser felt less like an agency and more like a founding design partner. They shaped our brand, product, and story with the same care we bring to the work.",
+    name: "Ananya Rao",
+    role: "Co-founder & CEO",
+    company: "Nova Health",
+  },
+  {
+    quote:
+      "The clarity of thinking is what stood out. Every review moved the product forward — no fluff, no theatre, just the right decision at the right time.",
+    name: "Marcus Bell",
+    role: "Head of Product",
+    company: "Pulse Finance",
+  },
+  {
+    quote:
+      "They shipped a website and identity system that finally matches how ambitious we actually are. Our conversion doubled in the first six weeks.",
+    name: "Sofia Lindqvist",
+    role: "Founder",
+    company: "Atlas Studio",
+  },
+  {
+    quote:
+      "Rare combination of taste, speed, and engineering rigour. Upriser is now the first team we call whenever something important needs to be built well.",
+    name: "Devon Park",
+    role: "CTO",
+    company: "ZoonRun",
+  },
+] as const;
+
+function Testimonials() {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const count = TESTIMONIALS.length;
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % count), 6000);
+    return () => clearInterval(id);
+  }, [paused, count]);
+
+  const t = TESTIMONIALS[index];
+
+  return (
+    <section
+      id="testimonials"
+      className="border-t border-hairline bg-transparent py-28 md:py-32"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <SectionHeader
+          eyebrow="Testimonials"
+          title="Kind words from founders."
+          intro="A few of the teams we've had the privilege of building alongside."
+        />
+
+        <div className="relative mt-16 md:mt-20">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -left-6 -top-10 font-display text-[220px] font-medium leading-none tracking-[-0.05em] text-hairline/70 md:text-[320px]"
+          >
+            "
+          </div>
+
+          <div className="relative mx-auto min-h-[280px] max-w-4xl md:min-h-[240px]">
+            <AnimatePresence mode="wait">
+              <motion.blockquote
+                key={index}
+                initial={{ opacity: 0, y: 24, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -24, filter: "blur(4px)" }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="relative"
+              >
+                <p className="text-[26px] font-medium leading-[1.35] tracking-[-0.015em] text-ink md:text-[38px]">
+                  {t.quote}
+                </p>
+                <footer className="mt-10 flex items-center gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-[14px] font-medium text-white">
+                    {t.name
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")
+                      .slice(0, 2)}
+                  </div>
+                  <div>
+                    <div className="text-[15px] font-medium text-ink">{t.name}</div>
+                    <div className="text-[13px] text-subtle">
+                      {t.role} · {t.company}
+                    </div>
+                  </div>
+                </footer>
+              </motion.blockquote>
+            </AnimatePresence>
+          </div>
+
+          {/* controls */}
+          <div className="mt-12 flex items-center justify-between gap-6">
+            <div className="flex items-center gap-2">
+              {TESTIMONIALS.map((_, i) => (
+                <button
+                  key={i}
+                  aria-label={`Show testimonial ${i + 1}`}
+                  onClick={() => setIndex(i)}
+                  className="group h-2 overflow-hidden rounded-full bg-hairline transition-all duration-500"
+                  style={{ width: i === index ? 40 : 16 }}
+                >
+                  <span
+                    className={`block h-full origin-left rounded-full bg-brand transition-transform duration-[6000ms] ease-linear ${
+                      i === index && !paused ? "scale-x-100" : "scale-x-0"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[13px] text-subtle">
+              <span className="text-ink">{String(index + 1).padStart(2, "0")}</span>
+              <span>/</span>
+              <span>{String(count).padStart(2, "0")}</span>
+            </div>
           </div>
         </div>
       </div>
