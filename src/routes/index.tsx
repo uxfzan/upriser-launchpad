@@ -1127,7 +1127,7 @@ function Contact() {
             <div className="flex gap-4">
               <a href="#" className="hover:text-white">Twitter</a>
               <a href="#" className="hover:text-white">Dribbble</a>
-              <a href="#" className="hover:text-white">LinkedIn</a>
+              <a href="https://www.linkedin.com/company/upriserstudio/" target="_blank" rel="noopener noreferrer" className="hover:text-white">LinkedIn</a>
             </div>
           </div>
         </div>
