@@ -1139,7 +1139,7 @@ function Contact() {
 /* -------------------------------------------------------------------------- */
 function Landing() {
   return (
-    <main className="relative overflow-hidden bg-background text-ink">
+    <main className="relative overflow-x-clip bg-background text-ink">
       {/* Ambient background — felt more than seen. Kept lightweight to avoid initial paint jank. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 [transform:translateZ(0)]">
         <div className="absolute -top-40 left-1/2 h-[720px] w-[1200px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(16,54,125,0.05),transparent_70%)]" />
