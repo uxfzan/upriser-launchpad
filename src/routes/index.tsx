@@ -464,9 +464,9 @@ function Services() {
 /*                                    WORK                                    */
 /* -------------------------------------------------------------------------- */
 const PROJECTS = [
-  { title: "Nova AI", tag: "Brand & Product", year: "2025", img: projectNova, meta: "AI writing platform" },
-  { title: "Pulse Health", tag: "Product Design", year: "2025", img: projectPulse, meta: "Digital health app" },
-  { title: "Atlas Ventures", tag: "Brand & Web", year: "2024", img: projectAtlas, meta: "Early-stage VC firm" },
+  // { title: "Nova AI", tag: "Brand & Product", year: "2025", img: projectNova, meta: "AI writing platform" },
+  // { title: "Pulse Health", tag: "Product Design", year: "2025", img: projectPulse, meta: "Digital health app" },
+  // { title: "Atlas Ventures", tag: "Brand & Web", year: "2024", img: projectAtlas, meta: "Early-stage VC firm" },
   {
     title: "Zoon Run",
     tag: "Brand & Web Development",
