@@ -1,50 +1,42 @@
 import { useEffect, useRef } from "react";
 
 /* -------------------------------------------------------------------------- */
-/*        Origami crane — hand-rolled faceted 3D renderer on <canvas>         */
+/*     Origami paper plane — hand-rolled faceted 3D renderer on <canvas>      */
 /* -------------------------------------------------------------------------- */
 
 type V3 = [number, number, number];
 
 const mirrorZ = (v: V3): V3 => [v[0], v[1], -v[2]];
 
-// Stylized paper crane silhouette, built from flat folded panels.
-const S1: V3 = [-0.95, 0.08, 0]; // tail base (spine)
-const S2: V3 = [0.0, 0.26, 0]; // mid spine
-const S3: V3 = [0.78, 0.14, 0]; // neck base
-const KL: V3 = [0.0, -0.62, -0.14]; // keel (belly) left
-const KR: V3 = [0.0, -0.62, 0.14];
-const WL: V3 = [-0.12, 0.98, -1.05]; // wing tip left
-const WR: V3 = mirrorZ(WL);
-const WLb: V3 = [-0.72, 0.52, -0.78]; // wing rear fold left
-const WRb: V3 = mirrorZ(WLb);
-const N1: V3 = [1.2, 0.78, 0];
-const HD: V3 = [1.5, 0.62, 0];
-const BK: V3 = [1.86, 0.44, 0];
-const TL: V3 = [-1.62, 0.9, 0];
+// Classic folded paper dart: nose at +x, wings sweeping back along -x.
+const NOSE: V3 = [1.62, 0.04, 0];
+const SPINE: V3 = [-0.98, 0.2, 0]; // rear top of centre fold
+const KEELL: V3 = [-0.86, -0.46, -0.05]; // rear keel (body underside)
+const KEELR: V3 = mirrorZ(KEELL);
+const WLT: V3 = [-1.04, 0.3, -1.02]; // left wing tip
+const WLB: V3 = [-0.88, 0.06, -0.42]; // left wing trailing inner
+const WLF: V3 = [-1.06, 0.02, -0.94]; // left winglet fold down
+const WRT: V3 = mirrorZ(WLT);
+const WRB: V3 = mirrorZ(WLB);
+const WRF: V3 = mirrorZ(WLF);
 
 const faces: V3[][] = [
-  // left wing (two folds)
-  [S2, WL, WLb],
-  [S2, WLb, S1],
-  [S2, S3, WL],
+  // left wing
+  [NOSE, WLT, WLB],
+  [NOSE, WLB, SPINE],
+  // left winglet
+  [WLT, WLF, WLB],
   // right wing
-  [S2, WRb, WR],
-  [S2, S1, WRb],
-  [S2, WR, S3],
-  // belly / keel
-  [S1, KL, S2],
-  [S2, KL, S3],
-  [S1, S2, KR],
-  [S2, S3, KR],
-  // neck + head
-  [S3, N1, HD],
-  [S3, HD, BK],
-  [S3, BK, HD],
-  // tail
-  [S1, TL, S2],
-  [S1, S2, TL],
+  [NOSE, WRB, WRT],
+  [NOSE, SPINE, WRB],
+  // right winglet
+  [WRT, WRB, WRF],
+  // fuselage / keel panels
+  [NOSE, SPINE, KEELL],
+  [NOSE, KEELR, SPINE],
+  [SPINE, KEELR, KEELL],
 ];
+
 
 function rotate(v: V3, ax: number, ay: number, az: number): V3 {
   let [x, y, z] = v;
