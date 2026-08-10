@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
+import OrigamiObject from "@/components/OrigamiObject";
 import projectNova from "@/assets/project-nova.jpg";
+
 import projectPulse from "@/assets/project-pulse.jpg";
 import projectAtlas from "@/assets/project-atlas.jpg";
 import projectZoonRun from "@/assets/project-zoonrun.jpg";
@@ -248,13 +250,17 @@ function Hero() {
       {/* soft vignette */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(6,20,52,0.55)_100%)]" />
 
+      {/* desktop-only interactive origami */}
+      <OrigamiObject className="pointer-events-none absolute right-[2%] top-1/2 hidden h-[520px] w-[520px] -translate-y-1/2 lg:block xl:right-[5%] xl:h-[600px] xl:w-[600px]" />
+
       <div className="relative mx-auto flex min-h-[92vh] max-w-[1400px] flex-col justify-between px-6 pb-16 pt-40 md:px-10 md:pb-24 md:pt-48">
         <motion.div
           initial="hidden"
           animate="show"
           variants={stagger}
-          className="max-w-[1100px]"
+          className="max-w-[1100px] lg:max-w-[52%]"
         >
+
           <motion.div variants={fadeUp} className="mb-10 flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-white/60">
             <span className="h-px w-8 bg-white/40" />
             Design & Development Studio
