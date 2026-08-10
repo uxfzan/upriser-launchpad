@@ -189,7 +189,7 @@ export default function OrigamiObject({ className = "" }: { className?: string }
   }, []);
 
   return (
-    <div className={`relative ${className}`} aria-hidden="true">
+    <div className={className} aria-hidden="true">
       <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.14),transparent_65%)]" />
       <canvas ref={canvasRef} className="h-full w-full" />
     </div>
