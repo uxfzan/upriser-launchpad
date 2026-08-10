@@ -120,7 +120,7 @@ export default function OrigamiObject({ className = "" }: { className?: string }
       const ax = -cur.y * 0.55 + Math.sin(t * 0.8 + 1) * 0.12 * drift - 0.1;
       const az = cur.x * -0.12 + Math.sin(t * 0.6) * 0.05 * drift;
 
-      const scale = Math.min(W, H) * 0.36;
+      const scale = Math.min(W, H) * 0.3;
       const cx = W / 2;
       const cy = H / 2;
       const camZ = 4.2;
