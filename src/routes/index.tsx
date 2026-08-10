@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
+import OrigamiObject from "@/components/OrigamiObject";
 import projectNova from "@/assets/project-nova.jpg";
+
 import projectPulse from "@/assets/project-pulse.jpg";
 import projectAtlas from "@/assets/project-atlas.jpg";
 import projectZoonRun from "@/assets/project-zoonrun.jpg";
