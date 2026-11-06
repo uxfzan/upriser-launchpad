@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } fr
 import { useEffect, useRef, useState, useMemo } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import OrigamiObject from "@/components/OrigamiObject";
-import rumiStoneHero from "@/assets/rumi-stone-hero.jpg.asset.json";
+import rumiStoneHero from "@/assets/rumi-stone-hero.jpg";
 import projectNova from "@/assets/project-nova.jpg";
 
 import projectPulse from "@/assets/project-pulse.jpg";
@@ -552,7 +552,7 @@ const PROJECTS = [
     title: "Rumi Stone",
     tag: "Website Design & Development",
     year: "",
-    img: rumiStoneHero.url,
+    img: rumiStoneHero,
     meta: "A thoughtfully designed digital experience for a family-owned memorial atelier, making it easier for families to explore custom memorials, discover granite collections and request personalized quotes.",
     url: "https://rumistone.com/",
     cta: "View Live Project",
