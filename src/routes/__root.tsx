@@ -73,6 +73,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -93,8 +94,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Upriser — Design & development partner for ambitious startups" },
       { name: "twitter:description", content: "Upriser is a design and development studio helping founders build brands, products, websites, and investor-ready stories." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a612f468-8ca1-4037-b033-e8e59306a663/id-preview-a2e4bd78--ab70cd2b-9ac6-406e-968a-aab45431201a.lovable.app-1783751715914.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a612f468-8ca1-4037-b033-e8e59306a663/id-preview-a2e4bd78--ab70cd2b-9ac6-406e-968a-aab45431201a.lovable.app-1783751715914.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
