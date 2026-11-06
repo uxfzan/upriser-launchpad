@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } fr
 import { useEffect, useRef, useState, useMemo } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import OrigamiObject from "@/components/OrigamiObject";
+import rumiStoneHero from "@/assets/rumi-stone-hero.jpg.asset.json";
 import projectNova from "@/assets/project-nova.jpg";
 
 import projectPulse from "@/assets/project-pulse.jpg";
@@ -12,6 +13,31 @@ import projectZoonRun from "@/assets/project-zoonrun.jpg";
 import projectSultanWarriors from "@/assets/project-sultan-warriors.jpg";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
+  head: () => ({
+    meta: [
+      { title: "Upriser Studio | Design, Development & AI Automation" },
+      {
+        name: "description",
+        content:
+          "We partner with ambitious businesses to create meaningful digital experiences, build powerful web solutions and implement intelligent AI automation. Bringing design, technology and innovation together to help businesses grow, evolve and stay ahead.",
+      },
+      { property: "og:title", content: "Upriser Studio | Design, Development & AI Automation" },
+      {
+        property: "og:description",
+        content:
+          "We partner with ambitious businesses to create meaningful digital experiences, build powerful web solutions and implement intelligent AI automation.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Upriser Studio | Design, Development & AI Automation" },
+      {
+        name: "twitter:description",
+        content:
+          "We partner with ambitious businesses to create meaningful digital experiences, build powerful web solutions and implement intelligent AI automation.",
+      },
+    ],
+  }),
   component: Landing,
 });
 
@@ -258,29 +284,28 @@ function Hero() {
           initial="hidden"
           animate="show"
           variants={stagger}
-          className="max-w-[1100px] lg:max-w-[52%]"
+          className="max-w-[1100px] lg:max-w-[58%]"
         >
 
           <motion.div variants={fadeUp} className="mb-10 flex items-center gap-3 text-[13px] uppercase tracking-[0.22em] text-white/60">
             <span className="h-px w-8 bg-white/40" />
-            Design & Development Studio
+            Design · Development · AI Automation
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
-            className="font-display text-[52px] font-medium leading-[1.02] tracking-[-0.03em] text-white sm:text-[64px] md:text-[80px] lg:text-[96px]"
+            className="font-display text-[52px] font-medium leading-[1.02] tracking-[-0.03em] text-white sm:text-[64px] md:text-[76px] lg:text-[82px]"
           >
-            Design and build<br />
-            partner for<br />
-            <span className="italic font-light text-white/85">growing businesses.</span>
+            We Help Businesses<br />
+            Stand Out, Work<br />
+            Smarter &amp; <span className="italic font-light text-white/85">Grow Faster.</span>
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
             className="mt-10 max-w-2xl text-[19px] leading-[1.55] text-white/70 md:text-[20px]"
           >
-            We help ambitious companies build stronger brands, better digital products,
-            and websites that drive growth.
+            We partner with ambitious businesses to create meaningful digital experiences, build powerful web solutions and implement intelligent AI automation. Bringing design, technology and innovation together to help businesses grow, evolve and stay ahead.
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-12 flex flex-wrap items-center gap-4">
@@ -390,6 +415,33 @@ const SERVICES = [
       "Investor-ready decks that tell a sharper story — clear narrative, considered typography, and visuals that earn attention in the room.",
     items: ["Narrative", "Deck Design", "Data Visualisation", "Investor Materials"],
   },
+  {
+    title: "AI Automation & Implementation",
+    description:
+      "We help businesses streamline operations through intelligent automation and AI-powered solutions. From automating repetitive tasks to integrating AI into existing workflows, we build solutions that save time, reduce manual effort and help businesses work smarter.",
+    items: [
+      {
+        title: "Business Workflow Automation",
+        description:
+          "Automating repetitive tasks, connecting business applications and streamlining everyday operations using n8n, Make and Zapier.",
+      },
+      {
+        title: "AI Chatbots & Virtual Assistants",
+        description:
+          "Building AI-powered chatbots and assistants for customer support, lead generation and business enquiries.",
+      },
+      {
+        title: "CRM & Lead Automation",
+        description:
+          "Automating lead capture, qualification, follow-ups, customer management and CRM workflows.",
+      },
+      {
+        title: "AI Integration & Custom Solutions",
+        description:
+          "Integrating AI into existing websites, applications and business systems through APIs and custom AI-powered solutions.",
+      },
+    ],
+  },
 ] as const;
 
 function Services() {
@@ -447,9 +499,16 @@ function Services() {
                         </p>
                         <ul className="grid gap-3 md:col-span-6 md:grid-cols-2">
                           {s.items.map((it) => (
-                            <li key={it} className="flex items-center gap-3 text-[16px] text-ink">
-                              <span className="text-brand">✦</span>
-                              {it}
+                            <li key={typeof it === "string" ? it : it.title} className="flex items-start gap-3 text-[16px] text-ink">
+                              <span className="mt-0.5 text-brand">✦</span>
+                              {typeof it === "string" ? (
+                                it
+                              ) : (
+                                <span>
+                                  <span className="font-medium">{it.title}</span>
+                                  <span className="mt-1 block text-[14px] leading-[1.5] text-subtle">{it.description}</span>
+                                </span>
+                              )}
                             </li>
                           ))}
                         </ul>
@@ -489,6 +548,15 @@ const PROJECTS = [
     meta: "Cricket team — Baramulla, Kashmir",
     url: "https://sultanwarriors.com",
   },
+  {
+    title: "Rumi Stone",
+    tag: "Website Design & Development",
+    year: "",
+    img: rumiStoneHero.url,
+    meta: "A thoughtfully designed digital experience for a family-owned memorial atelier, making it easier for families to explore custom memorials, discover granite collections and request personalized quotes.",
+    url: "https://rumistone.com/",
+    cta: "View Live Project",
+  },
 ] as const;
 
 function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
@@ -527,12 +595,18 @@ function ProjectCard({ p, i }: { p: typeof PROJECTS[number]; i: number }) {
             <div className="flex items-center gap-4 text-[12px] uppercase tracking-[0.18em] text-subtle">
               <span>{p.tag}</span>
               <span className="h-px w-4 bg-hairline" />
-              <span>{p.year}</span>
+              {p.year && <span>{p.year}</span>}
             </div>
             <h3 className="mt-3 text-[24px] font-medium tracking-[-0.02em] text-ink md:text-[26px]">
               {p.title}
             </h3>
-            <p className="mt-1 text-[15px] text-subtle">{p.meta}</p>
+            <p className="mt-2 max-w-xl text-[15px] leading-[1.55] text-subtle">{p.meta}</p>
+            {"cta" in p && p.cta && (
+              <span className="mt-5 inline-flex items-center gap-2 text-[14px] font-medium text-brand">
+                {p.cta}
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </span>
+            )}
           </div>
           <ArrowUpRight className="h-5 w-5 shrink-0 text-subtle transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
         </div>
