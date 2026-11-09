@@ -6,35 +6,32 @@ import { useEffect, useRef } from "react";
 
 type V3 = [number, number, number];
 
-const mirrorZ = (v: V3): V3 => [v[0], v[1], -v[2]];
+// Each folded-paper form shares this mesh so its vertices can morph smoothly.
+const shapes: V3[][] = [
+  // Paper plane
+  [
+    [1.62, 0.04, 0], [-0.98, 0.2, 0], [-0.86, -0.46, -0.05], [-0.86, -0.46, 0.05],
+    [-1.04, 0.3, -1.02], [-0.88, 0.06, -0.42], [-1.06, 0.02, -0.94],
+    [-1.04, 0.3, 1.02], [-0.88, 0.06, 0.42], [-1.06, 0.02, 0.94],
+  ],
+  // Paper boat, with a pointed bow and folded hull
+  [
+    [1.38, 0.02, 0], [-1.15, 0.02, 0], [-0.70, -0.48, -0.28], [-0.70, -0.48, 0.28],
+    [-0.24, 0.04, -0.94], [-0.90, 0.02, -0.58], [-0.46, 0.30, -0.72],
+    [-0.24, 0.04, 0.94], [-0.90, 0.02, 0.58], [-0.46, 0.30, 0.72],
+  ],
+  // Origami crane, with a raised head and broad swept wings
+  [
+    [1.30, 0.48, 0], [-0.28, 0.04, 0], [-0.98, -0.28, -0.10], [-0.98, -0.28, 0.10],
+    [-0.12, 0.22, -1.14], [-0.48, 0.02, -0.42], [-0.90, -0.14, -0.82],
+    [-0.12, 0.22, 1.14], [-0.48, 0.02, 0.42], [-0.90, -0.14, 0.82],
+  ],
+];
 
-// Classic folded paper dart: nose at +x, wings sweeping back along -x.
-const NOSE: V3 = [1.62, 0.04, 0];
-const SPINE: V3 = [-0.98, 0.2, 0]; // rear top of centre fold
-const KEELL: V3 = [-0.86, -0.46, -0.05]; // rear keel (body underside)
-const KEELR: V3 = mirrorZ(KEELL);
-const WLT: V3 = [-1.04, 0.3, -1.02]; // left wing tip
-const WLB: V3 = [-0.88, 0.06, -0.42]; // left wing trailing inner
-const WLF: V3 = [-1.06, 0.02, -0.94]; // left winglet fold down
-const WRT: V3 = mirrorZ(WLT);
-const WRB: V3 = mirrorZ(WLB);
-const WRF: V3 = mirrorZ(WLF);
-
-const faces: V3[][] = [
-  // left wing
-  [NOSE, WLT, WLB],
-  [NOSE, WLB, SPINE],
-  // left winglet
-  [WLT, WLF, WLB],
-  // right wing
-  [NOSE, WRB, WRT],
-  [NOSE, SPINE, WRB],
-  // right winglet
-  [WRT, WRB, WRF],
-  // fuselage / keel panels
-  [NOSE, SPINE, KEELL],
-  [NOSE, KEELR, SPINE],
-  [SPINE, KEELR, KEELL],
+const faces: number[][] = [
+  [0, 4, 5], [0, 5, 1], [4, 6, 5],
+  [0, 8, 7], [0, 1, 8], [7, 8, 9],
+  [0, 1, 2], [0, 3, 1], [1, 3, 2],
 ];
 
 
@@ -103,7 +100,7 @@ export default function OrigamiObject({ className = "" }: { className?: string }
     let raf = 0;
     let t = 0;
     const tick = () => {
-      t += 0.006;
+      t += 1 / 60;
       cur.x += (target.x - cur.x) * 0.055;
       cur.y += (target.y - cur.y) * 0.055;
 
@@ -111,6 +108,19 @@ export default function OrigamiObject({ className = "" }: { className?: string }
       const ay = cur.x * 0.9 + Math.sin(t) * 0.28 * drift;
       const ax = -cur.y * 0.55 + Math.sin(t * 0.8 + 1) * 0.12 * drift - 0.1;
       const az = cur.x * -0.12 + Math.sin(t * 0.6) * 0.05 * drift;
+
+      const progress = reduce ? 0 : (t % 9) / 3;
+      const shapeIndex = Math.floor(progress);
+      const nextShapeIndex = (shapeIndex + 1) % shapes.length;
+      const morph = reduce ? 0 : (1 - Math.cos(Math.PI * (progress - shapeIndex))) / 2;
+      const vertices = shapes[shapeIndex].map((point, index) => {
+        const next = shapes[nextShapeIndex][index];
+        return [
+          point[0] + (next[0] - point[0]) * morph,
+          point[1] + (next[1] - point[1]) * morph,
+          point[2] + (next[2] - point[2]) * morph,
+        ] as V3;
+      });
 
       const scale = Math.min(W, H) * 0.3;
       const cx = W / 2;
@@ -121,7 +131,7 @@ export default function OrigamiObject({ className = "" }: { className?: string }
       const prepped: Prepped[] = [];
 
       for (const f of faces) {
-        const r = f.map((v) => rotate(v, ax, ay, az)) as V3[];
+        const r = f.map((index) => rotate(vertices[index], ax, ay, az));
         const e1: V3 = [r[1][0] - r[0][0], r[1][1] - r[0][1], r[1][2] - r[0][2]];
         const e2: V3 = [r[2][0] - r[0][0], r[2][1] - r[0][1], r[2][2] - r[0][2]];
         let n = cross(e1, e2);
